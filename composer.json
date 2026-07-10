@@ -1,0 +1,18 @@
+{
+    "name": "php-concept/stack",
+    "description": "Concept application stack recipes",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Concept\\Stack\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.4",
+        "league/container": "^5.1"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1"
+    }
+}
