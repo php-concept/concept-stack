@@ -4,7 +4,6 @@ namespace Concept\Stack\Layer;
 
 final class StackLayer
 {
-    public const string MINIMAL_HTTP = 'minimal-http';
     public const string FOUNDATION = 'foundation';
     public const string LOGGING = 'logging';
     public const string TELEMETRY = 'telemetry';

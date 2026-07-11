@@ -11,20 +11,27 @@ use RuntimeException;
 
 final class ConceptStackBuilder
 {
-    private bool $minimalHttp = false;
-    private bool $foundation = false;
-    private bool $logging = false;
-    private bool $telemetry = false;
-    private bool $validation = false;
-    private bool $database = false;
-    private bool $session = false;
-    private bool $http = false;
-    private bool $console = false;
-    private bool $view = false;
-    private bool $twigErrors = false;
-    private bool $jsonErrors = false;
-    private bool $components = false;
-    private bool $runtime = false;
+    private const array LAYER_ORDER = [
+        StackLayer::FOUNDATION,
+        StackLayer::LOGGING,
+        StackLayer::TELEMETRY,
+        StackLayer::VALIDATION,
+        StackLayer::DATABASE,
+        StackLayer::SESSION,
+        StackLayer::HTTP,
+        StackLayer::CONSOLE,
+        StackLayer::VIEW,
+        StackLayer::TWIG_ERRORS,
+        StackLayer::JSON_ERRORS,
+        StackLayer::COMPONENTS,
+        StackLayer::RUNTIME,
+    ];
+
+    /** @var array<string, true> */
+    private array $enabledLayers = [];
+
+    /** @var array<string, array<string, mixed>> */
+    private array $layerOptions = [];
 
     /** @var array<string, true> */
     private array $removedLayers = [];
@@ -35,9 +42,6 @@ final class ConceptStackBuilder
     /** @var list<ServiceProviderInterface|Closure(string): mixed> */
     private array $appendedProviders = [];
 
-    /** @var list<string>|null */
-    private ?array $routePaths = null;
-
     private StackProviderRegistry $providers;
 
     public function __construct(
@@ -47,17 +51,9 @@ final class ConceptStackBuilder
         $this->providers = clone $providers;
     }
 
-    public function minimalHttp(): self
-    {
-        $this->minimalHttp = true;
-
-        return $this;
-    }
-
     public function withFoundation(): self
     {
-        $this->minimalHttp = false;
-        $this->foundation = true;
+        $this->enable(StackLayer::FOUNDATION);
 
         return $this;
     }
@@ -65,7 +61,7 @@ final class ConceptStackBuilder
     public function withLogging(): self
     {
         $this->withFoundation();
-        $this->logging = true;
+        $this->enable(StackLayer::LOGGING);
 
         return $this;
     }
@@ -73,7 +69,7 @@ final class ConceptStackBuilder
     public function withTelemetry(): self
     {
         $this->withFoundation();
-        $this->telemetry = true;
+        $this->enable(StackLayer::TELEMETRY);
 
         return $this;
     }
@@ -81,7 +77,7 @@ final class ConceptStackBuilder
     public function withValidation(): self
     {
         $this->withFoundation();
-        $this->validation = true;
+        $this->enable(StackLayer::VALIDATION);
 
         return $this;
     }
@@ -97,14 +93,18 @@ final class ConceptStackBuilder
     /**
      * @param list<string>|null $routePaths
      */
-    public function withHttp(?array $routePaths = null): self
+    public function withHttp(?array $routePaths = null, bool $minimal = false): self
     {
-        $this->withFoundation();
-        $this->http = true;
-
-        if ($routePaths !== null) {
-            $this->routePaths = $routePaths;
+        if (!$minimal) {
+            $this->withFoundation();
         }
+
+        $options = ['minimal' => $minimal];
+        if ($routePaths !== null) {
+            $options['routePaths'] = $routePaths;
+        }
+
+        $this->enable(StackLayer::HTTP, $options);
 
         return $this;
     }
@@ -112,7 +112,7 @@ final class ConceptStackBuilder
     public function withSession(): self
     {
         $this->withFoundation();
-        $this->session = true;
+        $this->enable(StackLayer::SESSION);
 
         return $this;
     }
@@ -120,7 +120,7 @@ final class ConceptStackBuilder
     public function withTwig(): self
     {
         $this->withHttp();
-        $this->view = true;
+        $this->enable(StackLayer::VIEW);
 
         return $this;
     }
@@ -128,8 +128,8 @@ final class ConceptStackBuilder
     public function withPretty404(): self
     {
         $this->withTwig();
-        $this->twigErrors = true;
-        $this->jsonErrors = false;
+        $this->enable(StackLayer::TWIG_ERRORS);
+        $this->disable(StackLayer::JSON_ERRORS);
 
         return $this;
     }
@@ -137,8 +137,8 @@ final class ConceptStackBuilder
     public function withJsonErrors(): self
     {
         $this->withHttp();
-        $this->jsonErrors = true;
-        $this->twigErrors = false;
+        $this->enable(StackLayer::JSON_ERRORS);
+        $this->disable(StackLayer::TWIG_ERRORS);
 
         return $this;
     }
@@ -146,15 +146,22 @@ final class ConceptStackBuilder
     public function withDatabase(): self
     {
         $this->withFoundation();
-        $this->database = true;
+        $this->enable(StackLayer::DATABASE);
 
         return $this;
     }
 
-    public function withConsole(): self
+    /**
+     * @param list<class-string> $commands
+     */
+    public function withConsole(?string $appName = null, ?string $appVersion = null, array $commands = []): self
     {
         $this->withFoundation();
-        $this->console = true;
+        $this->enable(StackLayer::CONSOLE, [
+            'appName' => $appName,
+            'appVersion' => $appVersion,
+            'commands' => $commands,
+        ]);
 
         return $this;
     }
@@ -162,7 +169,7 @@ final class ConceptStackBuilder
     public function withComponents(): self
     {
         $this->withFoundation();
-        $this->components = true;
+        $this->enable(StackLayer::COMPONENTS);
 
         return $this;
     }
@@ -170,14 +177,14 @@ final class ConceptStackBuilder
     public function withRuntime(): self
     {
         $this->withFoundation();
-        $this->runtime = true;
+        $this->enable(StackLayer::RUNTIME);
 
         return $this;
     }
 
     public function without(string $layer): self
     {
-        $this->removedLayers[$layer] = true;
+        $this->disable($layer);
 
         return $this;
     }
@@ -218,42 +225,47 @@ final class ConceptStackBuilder
      */
     public function providers(): array
     {
-        if ($this->minimalHttp) {
-            return $this->withCustomProviders([
-                $this->provider(StackLayer::MINIMAL_HTTP),
-            ]);
-        }
-
         $providers = [];
 
-        $this->push($providers, StackLayer::FOUNDATION, $this->foundation);
-        $this->push($providers, StackLayer::LOGGING, $this->logging);
-        $this->push($providers, StackLayer::TELEMETRY, $this->telemetry);
-        $this->push($providers, StackLayer::VALIDATION, $this->validation);
-        $this->push($providers, StackLayer::DATABASE, $this->database);
-        $this->push($providers, StackLayer::SESSION, $this->session);
-        $this->push($providers, StackLayer::HTTP, $this->http, ['routePaths' => $this->routePaths]);
-        $this->push($providers, StackLayer::CONSOLE, $this->console);
-        $this->push($providers, StackLayer::VIEW, $this->view);
-        $this->push($providers, StackLayer::TWIG_ERRORS, $this->twigErrors);
-        $this->push($providers, StackLayer::JSON_ERRORS, $this->jsonErrors);
-        $this->push($providers, StackLayer::COMPONENTS, $this->components);
-        $this->push($providers, StackLayer::RUNTIME, $this->runtime);
+        foreach (self::LAYER_ORDER as $layer) {
+            $this->push($providers, $layer);
+        }
 
         return $this->withCustomProviders($providers);
     }
 
     /**
-     * @param list<ServiceProviderInterface> $providers
      * @param array<string, mixed> $options
      */
-    private function push(array &$providers, string $layer, bool $enabled, array $options = []): void
+    private function enable(string $layer, array $options = []): void
     {
-        if (!$enabled || isset($this->removedLayers[$layer])) {
+        $this->enabledLayers[$layer] = true;
+        unset($this->removedLayers[$layer]);
+
+        if ($options !== []) {
+            $this->layerOptions[$layer] = [
+                ...($this->layerOptions[$layer] ?? []),
+                ...$options,
+            ];
+        }
+    }
+
+    private function disable(string $layer): void
+    {
+        unset($this->enabledLayers[$layer], $this->layerOptions[$layer]);
+        $this->removedLayers[$layer] = true;
+    }
+
+    /**
+     * @param list<ServiceProviderInterface> $providers
+     */
+    private function push(array &$providers, string $layer): void
+    {
+        if (!isset($this->enabledLayers[$layer]) || isset($this->removedLayers[$layer])) {
             return;
         }
 
-        $providers[] = $this->provider($layer, $options);
+        $providers[] = $this->provider($layer, $this->layerOptions[$layer] ?? []);
     }
 
     /**

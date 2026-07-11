@@ -26,6 +26,34 @@ final class StackLayerOptions
         return $this->values[$key] ?? null;
     }
 
+    public function stringOrNull(string $key): ?string
+    {
+        $value = $this->get($key);
+        if ($value === null) {
+            return null;
+        }
+
+        if (!is_string($value)) {
+            throw new RuntimeException(sprintf('Stack option "%s" must be a string or null.', $key));
+        }
+
+        return $value;
+    }
+
+    public function boolOrFalse(string $key): bool
+    {
+        $value = $this->get($key);
+        if ($value === null) {
+            return false;
+        }
+
+        if (!is_bool($value)) {
+            throw new RuntimeException(sprintf('Stack option "%s" must be a boolean or null.', $key));
+        }
+
+        return $value;
+    }
+
     /**
      * @return list<string>|null
      */

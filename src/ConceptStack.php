@@ -12,20 +12,26 @@ final class ConceptStack
         return new ConceptStackBuilder($root, $providers);
     }
 
-    public static function minimal(string $root, StackProviderRegistry $providers): ConceptStackBuilder
+    /**
+     * @param list<string> $routePaths
+     */
+    public static function minimal(string $root, StackProviderRegistry $providers, array $routePaths): ConceptStackBuilder
     {
         return self::custom($root, $providers)
-            ->minimalHttp();
+            ->withHttp(routePaths: $routePaths, minimal: true);
     }
 
-    public static function api(string $root, StackProviderRegistry $providers): ConceptStackBuilder
+    /**
+     * @param list<string> $routePaths
+     */
+    public static function api(string $root, StackProviderRegistry $providers, array $routePaths): ConceptStackBuilder
     {
         return self::custom($root, $providers)
             ->withLogging()
             ->withTelemetry()
             ->withValidation()
             ->withDatabase()
-            ->withHttp(routePaths: ['routes/api.php'])
+            ->withHttp(routePaths: $routePaths)
             ->withConsole()
             ->withJsonErrors()
             ->withRuntime();
