@@ -2,7 +2,7 @@
 
 namespace Concept\Stack\Options;
 
-use RuntimeException;
+use Concept\Stack\Exceptions\ConceptStackException;
 
 final class StackLayerOptions
 {
@@ -34,7 +34,7 @@ final class StackLayerOptions
         }
 
         if (!is_string($value)) {
-            throw new RuntimeException(sprintf('Stack option "%s" must be a string or null.', $key));
+            throw new ConceptStackException(sprintf('Stack option "%s" must be a string or null.', $key));
         }
 
         return $value;
@@ -48,7 +48,7 @@ final class StackLayerOptions
         }
 
         if (!is_bool($value)) {
-            throw new RuntimeException(sprintf('Stack option "%s" must be a boolean or null.', $key));
+            throw new ConceptStackException(sprintf('Stack option "%s" must be a boolean or null.', $key));
         }
 
         return $value;
@@ -65,12 +65,12 @@ final class StackLayerOptions
         }
 
         if (!is_array($value) || !array_is_list($value)) {
-            throw new RuntimeException(sprintf('Stack option "%s" must be a list of strings or null.', $key));
+            throw new ConceptStackException(sprintf('Stack option "%s" must be a list of strings or null.', $key));
         }
 
         foreach ($value as $item) {
             if (!is_string($item)) {
-                throw new RuntimeException(sprintf('Stack option "%s" must be a list of strings or null.', $key));
+                throw new ConceptStackException(sprintf('Stack option "%s" must be a list of strings or null.', $key));
             }
         }
 

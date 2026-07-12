@@ -3,9 +3,9 @@
 namespace Concept\Stack\Provider;
 
 use Closure;
+use Concept\Stack\Exceptions\ConceptStackException;
 use Concept\Stack\Options\StackLayerOptions;
 use League\Container\ServiceProvider\ServiceProviderInterface;
-use RuntimeException;
 
 final class StackProviderRegistry
 {
@@ -50,7 +50,7 @@ final class StackProviderRegistry
     public function make(string $layer, string $root, array $options = []): ServiceProviderInterface
     {
         if (!isset($this->factories[$layer])) {
-            throw new RuntimeException(sprintf('Stack layer factory is not registered: %s', $layer));
+            throw new ConceptStackException(sprintf('Stack layer factory is not registered: %s', $layer));
         }
 
         return ($this->factories[$layer])($root, new StackLayerOptions($options));

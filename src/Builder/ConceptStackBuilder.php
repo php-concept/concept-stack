@@ -3,11 +3,11 @@
 namespace Concept\Stack\Builder;
 
 use Closure;
+use Concept\Stack\Exceptions\ConceptStackException;
 use Concept\Stack\Layer\StackLayer;
 use Concept\Stack\Options\StackLayerOptions;
 use Concept\Stack\Provider\StackProviderRegistry;
 use League\Container\ServiceProvider\ServiceProviderInterface;
-use RuntimeException;
 
 final class ConceptStackBuilder
 {
@@ -300,7 +300,7 @@ final class ConceptStackBuilder
 
         $resolved = $provider($this->root);
         if (!$resolved instanceof ServiceProviderInterface) {
-            throw new RuntimeException('Custom stack provider factory must return a service provider.');
+            throw new ConceptStackException('Custom stack provider factory must return a service provider.');
         }
 
         return $resolved;
