@@ -12,6 +12,7 @@ final class Capability
     public const string VALIDATION = 'validation';
     public const string FLASH_VALIDATION = 'flash-validation';
     public const string DATABASE = 'database';
+    public const string CASTING = 'casting';
     public const string SESSION = 'session';
     public const string CSRF = 'csrf';
     public const string HTTP = 'http';

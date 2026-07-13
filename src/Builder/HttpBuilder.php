@@ -38,26 +38,13 @@ final class HttpBuilder implements StackCapabilityBuilder
         return $this;
     }
 
-    public function cacheDir(string $cacheDirectory): self
-    {
-        $this->options->setCacheDirectory($cacheDirectory);
-
-        return $this;
-    }
-
     /**
-     * @param list<class-string> $transformerClasses
+     * Opt-in typed route parameters (casting). Makes HTTP depend on the casting
+     * capability, which must be enabled via ConceptStack::withCasting().
      */
-    public function transformers(array $transformerClasses): self
+    public function withTypedRouteParameters(): self
     {
-        $this->options->setTransformerClasses($transformerClasses);
-
-        return $this;
-    }
-
-    public function debug(bool $debug = true): self
-    {
-        $this->options->setDebug($debug);
+        $this->options->setTypedRouteParameters(true);
 
         return $this;
     }
@@ -81,13 +68,12 @@ final class HttpBuilder implements StackCapabilityBuilder
             throw InvalidCapabilityOptionsException::missingOption(Capability::HTTP, 'routes');
         }
 
-        if ($this->options->cacheDirectory() === '') {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::HTTP, 'cacheDir');
-        }
+        $requires = $this->options->typedRouteParameters() ? [Capability::CASTING] : [];
 
         $this->parent->registerCapability(
             Capability::HTTP,
             new HttpStackProvider($this->options),
+            $requires,
         );
 
         return $this->parent;

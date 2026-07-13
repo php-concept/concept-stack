@@ -3,6 +3,7 @@
 namespace Concept\Stack\Builder;
 
 use Concept\Stack\Capability\CapabilityRegistry;
+use Concept\Stack\Options\CastingOptions;
 use Concept\Stack\Options\ConsoleOptions;
 use Concept\Stack\Options\HttpOptions;
 use League\Container\ServiceProvider\ServiceProviderInterface;
@@ -17,6 +18,11 @@ final class StackBuilder
     public function __construct()
     {
         $this->capabilities = new CapabilityRegistry();
+    }
+
+    public function withCasting(): CastingBuilder
+    {
+        return new CastingBuilder($this, new CastingOptions());
     }
 
     public function withConsole(): ConsoleBuilder

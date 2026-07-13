@@ -14,12 +14,7 @@ final class HttpOptions
     /** @var list<class-string<RouteInterceptorInterface>> */
     private array $interceptors = [];
 
-    private string $cacheDirectory = '';
-
-    /** @var list<class-string> */
-    private array $transformerClasses = [];
-
-    private bool $debug = false;
+    private bool $typedRouteParameters = false;
 
     /** @var MiddlewareInterface|class-string<MiddlewareInterface>|Closure|null */
     private MiddlewareInterface|Closure|string|null $notFoundMiddleware = null;
@@ -56,40 +51,14 @@ final class HttpOptions
         $this->interceptors = $interceptors;
     }
 
-    public function cacheDirectory(): string
+    public function typedRouteParameters(): bool
     {
-        return $this->cacheDirectory;
+        return $this->typedRouteParameters;
     }
 
-    public function setCacheDirectory(string $cacheDirectory): void
+    public function setTypedRouteParameters(bool $typedRouteParameters): void
     {
-        $this->cacheDirectory = $cacheDirectory;
-    }
-
-    /**
-     * @return list<class-string>
-     */
-    public function transformerClasses(): array
-    {
-        return $this->transformerClasses;
-    }
-
-    /**
-     * @param list<class-string> $transformerClasses
-     */
-    public function setTransformerClasses(array $transformerClasses): void
-    {
-        $this->transformerClasses = $transformerClasses;
-    }
-
-    public function debug(): bool
-    {
-        return $this->debug;
-    }
-
-    public function setDebug(bool $debug): void
-    {
-        $this->debug = $debug;
+        $this->typedRouteParameters = $typedRouteParameters;
     }
 
     /**

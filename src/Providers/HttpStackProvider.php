@@ -7,7 +7,6 @@ use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Routing\Resolvers\RouteParameterArgumentResolver;
 use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpKernelServiceProvider;
-use Concept\Extensions\CastingValinor\CastingServiceProvider;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
@@ -35,12 +34,6 @@ final class HttpStackProvider extends AbstractServiceProvider implements Bootabl
     {
         $container = $this->getContainer();
 
-        $container->addServiceProvider(new CastingServiceProvider(
-            cacheDirectory: $this->options->cacheDirectory(),
-            transformerClasses: $this->options->transformerClasses(),
-            debug: $this->options->debug(),
-        ));
-
         $container->addServiceProvider(new HttpKernelServiceProvider(
             routePaths: $this->options->routes(),
             resolvers: $this->getArgumentResolvers($container),
@@ -56,12 +49,16 @@ final class HttpStackProvider extends AbstractServiceProvider implements Bootabl
      */
     private function getArgumentResolvers(DefinitionContainerInterface $container): array
     {
-        return [
-            new ServerRequestArgumentResolver(),
-            new TypedRouteParameterArgumentResolver(
+        $resolvers = [new ServerRequestArgumentResolver()];
+
+        if ($this->options->typedRouteParameters()) {
+            $resolvers[] = new TypedRouteParameterArgumentResolver(
                 fn(): CasterInterface => ContainerDependency::get($container, CasterInterface::class),
-            ),
-            new RouteParameterArgumentResolver(),
-        ];
+            );
+        }
+
+        $resolvers[] = new RouteParameterArgumentResolver();
+
+        return $resolvers;
     }
 }
