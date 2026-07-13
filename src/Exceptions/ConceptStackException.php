@@ -4,6 +4,9 @@ namespace Concept\Stack\Exceptions;
 
 use Exception;
 
-class ConceptStackException extends Exception
+/**
+ * Base class for all Concept Stack exceptions.
+ */
+abstract class ConceptStackException extends Exception
 {
 }

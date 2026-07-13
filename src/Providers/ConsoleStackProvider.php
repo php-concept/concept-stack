@@ -1,21 +1,16 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Provider\Layer;
+namespace Concept\Stack\Providers;
 
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
+use Concept\Stack\Options\ConsoleOptions;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
-use Symfony\Component\Console\Command\Command;
 
-final class ConsoleLayerProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
+final class ConsoleStackProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
-    /**
-     * @param list<class-string<Command>> $commands
-     */
     public function __construct(
-        private readonly string $appName,
-        private readonly string $appVersion,
-        private readonly array $commands,
+        private readonly ConsoleOptions $options,
     ) {}
 
     public function provides(string $id): bool
@@ -30,9 +25,9 @@ final class ConsoleLayerProvider extends AbstractServiceProvider implements Boot
     public function boot(): void
     {
         $this->getContainer()->addServiceProvider(new ConsoleSymfonyServiceProvider(
-            appName: $this->appName,
-            appVersion: $this->appVersion,
-            commands: $this->commands,
+            appName: $this->options->appName(),
+            appVersion: $this->options->appVersion(),
+            commands: $this->options->commands(),
         ));
     }
 }
