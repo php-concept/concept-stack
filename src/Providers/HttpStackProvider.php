@@ -9,6 +9,8 @@ use Concept\Core\Http\Routing\Resolvers\ServerRequestArgumentResolver;
 use Concept\Core\Providers\Http\HttpKernelServiceProvider;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
 use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolver;
+use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
+use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
 use Concept\Stack\Options\HttpOptions;
 use League\Container\DefinitionContainerInterface;
@@ -49,7 +51,19 @@ final class HttpStackProvider extends AbstractServiceProvider implements Bootabl
      */
     private function getArgumentResolvers(DefinitionContainerInterface $container): array
     {
-        $resolvers = [new ServerRequestArgumentResolver()];
+        $resolvers = [];
+
+        if ($this->options->formRequests()) {
+            $resolvers[] = new FormRequestArgumentResolver(
+                formRequestFactory: fn(): FormRequestFactoryInterface => ContainerDependency::get(
+                    $container,
+                    FormRequestFactoryInterface::class,
+                ),
+                container: $container,
+            );
+        }
+
+        $resolvers[] = new ServerRequestArgumentResolver();
 
         if ($this->options->typedRouteParameters()) {
             $resolvers[] = new TypedRouteParameterArgumentResolver(

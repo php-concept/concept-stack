@@ -16,6 +16,8 @@ final class HttpOptions
 
     private bool $typedRouteParameters = false;
 
+    private bool $formRequests = false;
+
     /** @var MiddlewareInterface|class-string<MiddlewareInterface>|Closure|null */
     private MiddlewareInterface|Closure|string|null $notFoundMiddleware = null;
 
@@ -59,6 +61,16 @@ final class HttpOptions
     public function setTypedRouteParameters(bool $typedRouteParameters): void
     {
         $this->typedRouteParameters = $typedRouteParameters;
+    }
+
+    public function formRequests(): bool
+    {
+        return $this->formRequests;
+    }
+
+    public function setFormRequests(bool $formRequests): void
+    {
+        $this->formRequests = $formRequests;
     }
 
     /**

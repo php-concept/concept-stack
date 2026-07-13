@@ -6,6 +6,7 @@ use Concept\Stack\Capability\CapabilityRegistry;
 use Concept\Stack\Options\CastingOptions;
 use Concept\Stack\Options\ConsoleOptions;
 use Concept\Stack\Options\HttpOptions;
+use Concept\Stack\Options\ValidationOptions;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
 final class StackBuilder
@@ -23,6 +24,11 @@ final class StackBuilder
     public function withCasting(): CastingBuilder
     {
         return new CastingBuilder($this, new CastingOptions());
+    }
+
+    public function withValidation(): ValidationBuilder
+    {
+        return new ValidationBuilder($this, new ValidationOptions());
     }
 
     public function withConsole(): ConsoleBuilder

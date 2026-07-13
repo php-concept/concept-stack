@@ -39,6 +39,17 @@ final class HttpBuilder implements StackCapabilityBuilder
     }
 
     /**
+     * Opt-in form request resolving. Makes HTTP depend on the validation
+     * capability, which must be enabled via ConceptStack::withValidation().
+     */
+    public function withFormRequests(): self
+    {
+        $this->options->setFormRequests(true);
+
+        return $this;
+    }
+
+    /**
      * Opt-in typed route parameters (casting). Makes HTTP depend on the casting
      * capability, which must be enabled via ConceptStack::withCasting().
      */
@@ -68,7 +79,15 @@ final class HttpBuilder implements StackCapabilityBuilder
             throw InvalidCapabilityOptionsException::missingOption(Capability::HTTP, 'routes');
         }
 
-        $requires = $this->options->typedRouteParameters() ? [Capability::CASTING] : [];
+        $requires = [];
+
+        if ($this->options->formRequests()) {
+            $requires[] = Capability::VALIDATION;
+        }
+
+        if ($this->options->typedRouteParameters()) {
+            $requires[] = Capability::CASTING;
+        }
 
         $this->parent->registerCapability(
             Capability::HTTP,
