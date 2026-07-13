@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Builder;
+namespace Concept\Stack\Bricks\Console;
 
 use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
+use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use Concept\Stack\Options\ConsoleOptions;
-use Concept\Stack\Providers\ConsoleStackProvider;
 use Symfony\Component\Console\Command\Command;
 
 final class ConsoleBuilder implements StackCapabilityBuilder

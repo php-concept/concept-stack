@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Providers;
+namespace Concept\Stack\Bricks\Http;
 
 use Concept\Core\Container\ContainerDependency;
 use Concept\Core\Http\Contracts\ArgumentResolverInterface;
@@ -12,7 +12,6 @@ use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolve
 use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
-use Concept\Stack\Options\HttpOptions;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;

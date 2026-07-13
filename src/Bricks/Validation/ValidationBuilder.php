@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Builder;
+namespace Concept\Stack\Bricks\Validation;
 
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
 use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
+use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use Concept\Stack\Options\ValidationOptions;
-use Concept\Stack\Providers\ValidationStackProvider;
 
 final class ValidationBuilder implements StackCapabilityBuilder
 {

@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Builder;
+namespace Concept\Stack\Bricks\Masking;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
 use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
+use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use Concept\Stack\Options\MaskingOptions;
-use Concept\Stack\Providers\MaskingStackProvider;
 
 final class MaskingBuilder implements StackCapabilityBuilder
 {

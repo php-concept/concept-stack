@@ -1,12 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Builder;
+namespace Concept\Stack\Bricks\Logging;
 
 use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
+use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
 use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
-use Concept\Stack\Options\LoggingOptions;
-use Concept\Stack\Providers\LoggingStackProvider;
 
 final class LoggingBuilder implements StackCapabilityBuilder
 {

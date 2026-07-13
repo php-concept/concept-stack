@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Options;
+namespace Concept\Stack\Bricks\Http;
 
 use Closure;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;

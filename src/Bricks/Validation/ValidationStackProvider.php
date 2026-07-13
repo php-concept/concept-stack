@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Providers;
+namespace Concept\Stack\Bricks\Validation;
 
 use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\CastingValinor\Contracts\CasterInterface;
@@ -9,7 +9,6 @@ use Concept\Extensions\FormRequest\FormRequestServiceProvider;
 use Concept\Extensions\ValidationRakit\Contracts\ValidatorInterface;
 use Concept\Extensions\ValidationRakit\ValidationLogger;
 use Concept\Extensions\ValidationRakit\ValidationServiceProvider;
-use Concept\Stack\Options\ValidationOptions;
 use Concept\Stack\Support\OptionalDependency;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;

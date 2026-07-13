@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Providers;
+namespace Concept\Stack\Bricks\Casting;
 
 use Concept\Extensions\CastingValinor\CastingServiceProvider;
-use Concept\Stack\Options\CastingOptions;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 

@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Providers;
+namespace Concept\Stack\Bricks\Masking;
 
 use Concept\Extensions\DataMasker\DataMaskerServiceProvider;
-use Concept\Stack\Options\MaskingOptions;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 

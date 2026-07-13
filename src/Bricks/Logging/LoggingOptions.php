@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Options;
+namespace Concept\Stack\Bricks\Logging;
 
 final class LoggingOptions
 {

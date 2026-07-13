@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Builder;
+namespace Concept\Stack\Bricks\Casting;
 
 use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
+use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use Concept\Stack\Options\CastingOptions;
-use Concept\Stack\Providers\CastingStackProvider;
 
 final class CastingBuilder implements StackCapabilityBuilder
 {

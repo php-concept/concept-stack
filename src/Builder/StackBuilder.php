@@ -2,13 +2,19 @@
 
 namespace Concept\Stack\Builder;
 
+use Concept\Stack\Bricks\Casting\CastingBuilder;
+use Concept\Stack\Bricks\Casting\CastingOptions;
+use Concept\Stack\Bricks\Console\ConsoleBuilder;
+use Concept\Stack\Bricks\Console\ConsoleOptions;
+use Concept\Stack\Bricks\Http\HttpBuilder;
+use Concept\Stack\Bricks\Http\HttpOptions;
+use Concept\Stack\Bricks\Logging\LoggingBuilder;
+use Concept\Stack\Bricks\Logging\LoggingOptions;
+use Concept\Stack\Bricks\Masking\MaskingBuilder;
+use Concept\Stack\Bricks\Masking\MaskingOptions;
+use Concept\Stack\Bricks\Validation\ValidationBuilder;
+use Concept\Stack\Bricks\Validation\ValidationOptions;
 use Concept\Stack\Capability\CapabilityRegistry;
-use Concept\Stack\Options\CastingOptions;
-use Concept\Stack\Options\ConsoleOptions;
-use Concept\Stack\Options\HttpOptions;
-use Concept\Stack\Options\LoggingOptions;
-use Concept\Stack\Options\MaskingOptions;
-use Concept\Stack\Options\ValidationOptions;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
 final class StackBuilder

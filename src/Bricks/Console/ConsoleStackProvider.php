@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Providers;
+namespace Concept\Stack\Bricks\Console;
 
 use Concept\Extensions\ConsoleSymfony\ConsoleSymfonyServiceProvider;
-use Concept\Stack\Options\ConsoleOptions;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 

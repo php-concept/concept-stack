@@ -1,14 +1,13 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Builder;
+namespace Concept\Stack\Bricks\Http;
 
+use Closure;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
+use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
 use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
-use Closure;
-use Concept\Stack\Options\HttpOptions;
-use Concept\Stack\Providers\HttpStackProvider;
 use Psr\Http\Server\MiddlewareInterface;
 
 final class HttpBuilder implements StackCapabilityBuilder

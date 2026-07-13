@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace Concept\Stack\Providers;
+namespace Concept\Stack\Bricks\Logging;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerInterface;
 use Concept\Extensions\LoggerMonolog\LoggerMonologServiceProvider;
-use Concept\Stack\Options\LoggingOptions;
 use Concept\Stack\Support\OptionalDependency;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
