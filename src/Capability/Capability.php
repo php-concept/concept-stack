@@ -8,6 +8,7 @@ namespace Concept\Stack\Capability;
 final class Capability
 {
     public const string LOGGING = 'logging';
+    public const string MASKING = 'masking';
     public const string TELEMETRY = 'telemetry';
     public const string VALIDATION = 'validation';
     public const string FLASH_VALIDATION = 'flash-validation';

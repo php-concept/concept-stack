@@ -6,6 +6,8 @@ use Concept\Stack\Capability\CapabilityRegistry;
 use Concept\Stack\Options\CastingOptions;
 use Concept\Stack\Options\ConsoleOptions;
 use Concept\Stack\Options\HttpOptions;
+use Concept\Stack\Options\LoggingOptions;
+use Concept\Stack\Options\MaskingOptions;
 use Concept\Stack\Options\ValidationOptions;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
@@ -19,6 +21,16 @@ final class StackBuilder
     public function __construct()
     {
         $this->capabilities = new CapabilityRegistry();
+    }
+
+    public function withMasking(): MaskingBuilder
+    {
+        return new MaskingBuilder($this, new MaskingOptions());
+    }
+
+    public function withLogging(): LoggingBuilder
+    {
+        return new LoggingBuilder($this, new LoggingOptions());
     }
 
     public function withCasting(): CastingBuilder

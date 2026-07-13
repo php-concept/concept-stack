@@ -17,6 +17,7 @@
         "php-concept/extension-data-masker": "^1.0",
         "php-concept/extension-form-request": "^1.0",
         "php-concept/extension-http": "^1.0",
+        "php-concept/extension-logger-monolog": "^1.0",
         "php-concept/extension-validation-rakit": "^1.0",
         "symfony/console": "^7.3",
         "php-concept/extension-error-handler-whoops": "^1.0",
