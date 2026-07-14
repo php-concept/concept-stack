@@ -2,12 +2,10 @@
 
 namespace Concept\Stack\Bricks\Database;
 
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 
-final class DatabaseBuilder implements StackCapabilityBuilder
+final class DatabaseBuilder
 {
     public function __construct(
         private readonly StackBuilder $parent,
@@ -71,6 +69,7 @@ final class DatabaseBuilder implements StackCapabilityBuilder
     public function withMasking(): self
     {
         $this->options->setQueryLogMasking(true);
+        $this->parent->require(Capability::DATABASE, Capability::MASKING);
 
         return $this;
     }
@@ -81,32 +80,8 @@ final class DatabaseBuilder implements StackCapabilityBuilder
     public function withQueryTelemetry(): self
     {
         $this->options->setQueryTelemetry(true);
+        $this->parent->require(Capability::DATABASE, Capability::TELEMETRY);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        if ($this->options->connection() === []) {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::DATABASE, 'connection');
-        }
-
-        $requires = [];
-
-        if ($this->options->queryLogMasking()) {
-            $requires[] = Capability::MASKING;
-        }
-
-        if ($this->options->queryTelemetry()) {
-            $requires[] = Capability::TELEMETRY;
-        }
-
-        $this->parent->registerCapability(
-            Capability::DATABASE,
-            new DatabaseStackProvider($this->options),
-            $requires,
-        );
-
-        return $this->parent;
     }
 }

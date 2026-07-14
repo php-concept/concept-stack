@@ -3,14 +3,10 @@
 namespace Concept\Stack\Bricks\Masking;
 
 use Concept\Extensions\DataMasker\Contracts\DataMaskerRuleInterface;
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
-use Concept\Stack\Builder\StackBuilder;
-use Concept\Stack\Capability\Capability;
 
-final class MaskingBuilder implements StackCapabilityBuilder
+final class MaskingBuilder
 {
     public function __construct(
-        private readonly StackBuilder $parent,
         private readonly MaskingOptions $options,
     ) {}
 
@@ -42,15 +38,5 @@ final class MaskingBuilder implements StackCapabilityBuilder
         $this->options->setRules($rules);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        $this->parent->registerCapability(
-            Capability::MASKING,
-            new MaskingStackProvider($this->options),
-        );
-
-        return $this->parent;
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Concept\Stack\Bricks\Database;
 
+use Concept\Stack\Capability\Capability;
+use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
+
 final class DatabaseOptions
 {
     /** @var array<string, mixed> */
@@ -131,5 +134,12 @@ final class DatabaseOptions
     public function setQueryTelemetry(bool $queryTelemetry): void
     {
         $this->queryTelemetry = $queryTelemetry;
+    }
+
+    public function assertValid(): void
+    {
+        if ($this->connection === []) {
+            throw InvalidCapabilityOptionsException::missingOption(Capability::DATABASE, 'connection');
+        }
     }
 }

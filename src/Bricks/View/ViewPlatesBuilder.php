@@ -2,16 +2,9 @@
 
 namespace Concept\Stack\Bricks\View;
 
-use Concept\Stack\Capability\Capability;
-use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
-
-/**
- * Nested under ViewBuilder. end() returns ViewBuilder (not StackBuilder).
- */
 final class ViewPlatesBuilder
 {
     public function __construct(
-        private readonly ViewBuilder $parent,
         private readonly ViewOptions $options,
     ) {}
 
@@ -23,14 +16,5 @@ final class ViewPlatesBuilder
         $this->options->setPlatesViewsPath($viewsPath);
 
         return $this;
-    }
-
-    public function end(): ViewBuilder
-    {
-        if ($this->options->platesViewsPath() === '') {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::VIEW, 'withPlates()->viewsPath');
-        }
-
-        return $this->parent;
     }
 }

@@ -2,15 +2,11 @@
 
 namespace Concept\Stack\Bricks\Session;
 
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
-use Concept\Stack\Builder\StackBuilder;
-use Concept\Stack\Capability\Capability;
 use SessionHandlerInterface;
 
-final class SessionBuilder implements StackCapabilityBuilder
+final class SessionBuilder
 {
     public function __construct(
-        private readonly StackBuilder $parent,
         private readonly SessionOptions $options,
     ) {}
 
@@ -43,15 +39,5 @@ final class SessionBuilder implements StackCapabilityBuilder
         $this->options->setCsrf(true);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        $this->parent->registerCapability(
-            Capability::SESSION,
-            new SessionStackProvider($this->options),
-        );
-
-        return $this->parent;
     }
 }

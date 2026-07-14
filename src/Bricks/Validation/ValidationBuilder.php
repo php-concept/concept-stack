@@ -3,14 +3,10 @@
 namespace Concept\Stack\Bricks\Validation;
 
 use Concept\Extensions\ValidationRakit\Contracts\RuleInterface;
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
-use Concept\Stack\Builder\StackBuilder;
-use Concept\Stack\Capability\Capability;
 
-final class ValidationBuilder implements StackCapabilityBuilder
+final class ValidationBuilder
 {
     public function __construct(
-        private readonly StackBuilder $parent,
         private readonly ValidationOptions $options,
     ) {}
 
@@ -54,15 +50,5 @@ final class ValidationBuilder implements StackCapabilityBuilder
         $this->options->setGlobalExcept($globalExcept);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        $this->parent->registerCapability(
-            Capability::VALIDATION,
-            new ValidationStackProvider($this->options),
-        );
-
-        return $this->parent;
     }
 }

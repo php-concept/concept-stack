@@ -2,16 +2,9 @@
 
 namespace Concept\Stack\Bricks\View;
 
-use Concept\Stack\Capability\Capability;
-use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
-
-/**
- * Nested under ViewBuilder. end() returns ViewBuilder (not StackBuilder).
- */
 final class ViewTwigBuilder
 {
     public function __construct(
-        private readonly ViewBuilder $parent,
         private readonly ViewOptions $options,
     ) {}
 
@@ -40,14 +33,5 @@ final class ViewTwigBuilder
         $this->options->setTwigDebug($debug);
 
         return $this;
-    }
-
-    public function end(): ViewBuilder
-    {
-        if ($this->options->twigViewsPath() === '') {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::VIEW, 'withTwig()->viewsPath');
-        }
-
-        return $this->parent;
     }
 }

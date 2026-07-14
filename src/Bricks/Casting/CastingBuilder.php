@@ -2,14 +2,9 @@
 
 namespace Concept\Stack\Bricks\Casting;
 
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
-use Concept\Stack\Builder\StackBuilder;
-use Concept\Stack\Capability\Capability;
-
-final class CastingBuilder implements StackCapabilityBuilder
+final class CastingBuilder
 {
     public function __construct(
-        private readonly StackBuilder $parent,
         private readonly CastingOptions $options,
     ) {}
 
@@ -35,15 +30,5 @@ final class CastingBuilder implements StackCapabilityBuilder
         $this->options->setDebug($debug);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        $this->parent->registerCapability(
-            Capability::CASTING,
-            new CastingStackProvider($this->options),
-        );
-
-        return $this->parent;
     }
 }

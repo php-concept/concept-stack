@@ -2,15 +2,11 @@
 
 namespace Concept\Stack\Bricks\Console;
 
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
-use Concept\Stack\Builder\StackBuilder;
-use Concept\Stack\Capability\Capability;
 use Symfony\Component\Console\Command\Command;
 
-final class ConsoleBuilder implements StackCapabilityBuilder
+final class ConsoleBuilder
 {
     public function __construct(
-        private readonly StackBuilder $parent,
         private readonly ConsoleOptions $options,
     ) {}
 
@@ -36,12 +32,5 @@ final class ConsoleBuilder implements StackCapabilityBuilder
         $this->options->setCommands($commands);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        $this->parent->registerCapability(Capability::CONSOLE, new ConsoleStackProvider($this->options));
-
-        return $this->parent;
     }
 }

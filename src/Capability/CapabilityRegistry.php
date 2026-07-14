@@ -2,6 +2,7 @@
 
 namespace Concept\Stack\Capability;
 
+use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 use Concept\Stack\Exceptions\MissingCapabilityDependencyException;
 
 /**
@@ -17,7 +18,22 @@ final class CapabilityRegistry
      */
     public function register(string $name, array $requires = []): void
     {
+        if ($this->has($name)) {
+            throw InvalidCapabilityOptionsException::alreadyEnabled($name);
+        }
+
         $this->capabilities[$name] = $requires;
+    }
+
+    public function require(string $name, string $dependency): void
+    {
+        if (!$this->has($name)) {
+            throw InvalidCapabilityOptionsException::missingOption($name, 'enable via with*() first');
+        }
+
+        if (!in_array($dependency, $this->capabilities[$name], true)) {
+            $this->capabilities[$name][] = $dependency;
+        }
     }
 
     public function has(string $name): bool

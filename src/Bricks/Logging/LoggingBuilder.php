@@ -2,7 +2,6 @@
 
 namespace Concept\Stack\Bricks\Logging;
 
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
 use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
@@ -12,7 +11,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Throwable;
 
-final class LoggingBuilder implements StackCapabilityBuilder
+final class LoggingBuilder
 {
     public function __construct(
         private readonly StackBuilder $parent,
@@ -74,25 +73,9 @@ final class LoggingBuilder implements StackCapabilityBuilder
     public function withMasking(): self
     {
         $this->options->setMasking(true);
+        $this->parent->require(Capability::LOGGING, Capability::MASKING);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        if ($this->options->handlers() === []) {
-            throw InvalidCapabilityOptionsException::missingHandlers(Capability::LOGGING);
-        }
-
-        $requires = $this->options->masking() ? [Capability::MASKING] : [];
-
-        $this->parent->registerCapability(
-            Capability::LOGGING,
-            new LoggingStackProvider($this->options),
-            $requires,
-        );
-
-        return $this->parent;
     }
 
     private function resolveLevel(?string $level): Level

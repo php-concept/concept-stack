@@ -2,17 +2,13 @@
 
 namespace Concept\Stack\Bricks\View;
 
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
-use Concept\Stack\Builder\StackBuilder;
-use Concept\Stack\Capability\Capability;
 use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 
-final class ViewBuilder implements StackCapabilityBuilder
+final class ViewBuilder
 {
     private const string ERR_ENGINE_XOR = 'Capability "view" accepts only one engine: withTwig() or withPlates().';
 
     public function __construct(
-        private readonly StackBuilder $parent,
         private readonly ViewOptions $options,
     ) {}
 
@@ -58,7 +54,7 @@ final class ViewBuilder implements StackCapabilityBuilder
         $this->assertEngineUnsetOr(ViewOptions::ENGINE_TWIG);
         $this->options->setEngine(ViewOptions::ENGINE_TWIG);
 
-        return new ViewTwigBuilder($this, $this->options);
+        return new ViewTwigBuilder($this->options);
     }
 
     /**
@@ -69,22 +65,7 @@ final class ViewBuilder implements StackCapabilityBuilder
         $this->assertEngineUnsetOr(ViewOptions::ENGINE_PLATES);
         $this->options->setEngine(ViewOptions::ENGINE_PLATES);
 
-        return new ViewPlatesBuilder($this, $this->options);
-    }
-
-    public function end(): StackBuilder
-    {
-        if ($this->options->engine() === null) {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::VIEW, 'withTwig()/withPlates()');
-        }
-
-        $this->parent->registerCapability(
-            Capability::VIEW,
-            new ViewStackProvider($this->options),
-            [Capability::HTTP],
-        );
-
-        return $this->parent;
+        return new ViewPlatesBuilder($this->options);
     }
 
     private function assertEngineUnsetOr(string $engine): void

@@ -4,13 +4,11 @@ namespace Concept\Stack\Bricks\Http;
 
 use Closure;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
-use Concept\Stack\Builder\Contracts\StackCapabilityBuilder;
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 use Psr\Http\Server\MiddlewareInterface;
 
-final class HttpBuilder implements StackCapabilityBuilder
+final class HttpBuilder
 {
     public function __construct(
         private readonly StackBuilder $parent,
@@ -44,6 +42,7 @@ final class HttpBuilder implements StackCapabilityBuilder
     public function withFormRequests(): self
     {
         $this->options->setFormRequests(true);
+        $this->parent->require(Capability::HTTP, Capability::VALIDATION);
 
         return $this;
     }
@@ -55,6 +54,7 @@ final class HttpBuilder implements StackCapabilityBuilder
     public function withTypedRouteParameters(): self
     {
         $this->options->setTypedRouteParameters(true);
+        $this->parent->require(Capability::HTTP, Capability::CASTING);
 
         return $this;
     }
@@ -70,30 +70,5 @@ final class HttpBuilder implements StackCapabilityBuilder
         $this->options->setNotFoundMiddleware($middleware);
 
         return $this;
-    }
-
-    public function end(): StackBuilder
-    {
-        if ($this->options->routes() === []) {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::HTTP, 'routes');
-        }
-
-        $requires = [];
-
-        if ($this->options->formRequests()) {
-            $requires[] = Capability::VALIDATION;
-        }
-
-        if ($this->options->typedRouteParameters()) {
-            $requires[] = Capability::CASTING;
-        }
-
-        $this->parent->registerCapability(
-            Capability::HTTP,
-            new HttpStackProvider($this->options),
-            $requires,
-        );
-
-        return $this->parent;
     }
 }

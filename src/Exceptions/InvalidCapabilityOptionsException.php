@@ -8,6 +8,8 @@ final class InvalidCapabilityOptionsException extends ConceptStackException
 
     private const string ERR_MISSING_HANDLERS = 'Capability "%s" requires at least one handler (toRotatingFile, toStderr, toHandler).';
 
+    private const string ERR_ALREADY_ENABLED = 'Capability "%s" is already enabled.';
+
     public static function missingOption(string $capability, string $option): self
     {
         return new self(sprintf(self::ERR_MISSING, $capability, $option));
@@ -16,5 +18,10 @@ final class InvalidCapabilityOptionsException extends ConceptStackException
     public static function missingHandlers(string $capability): self
     {
         return new self(sprintf(self::ERR_MISSING_HANDLERS, $capability));
+    }
+
+    public static function alreadyEnabled(string $capability): self
+    {
+        return new self(sprintf(self::ERR_ALREADY_ENABLED, $capability));
     }
 }

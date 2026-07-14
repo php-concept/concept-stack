@@ -2,6 +2,8 @@
 
 namespace Concept\Stack\Bricks\Logging;
 
+use Concept\Stack\Capability\Capability;
+use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 use Monolog\Handler\HandlerInterface;
 
 final class LoggingOptions
@@ -56,5 +58,12 @@ final class LoggingOptions
     public function setMasking(bool $masking): void
     {
         $this->masking = $masking;
+    }
+
+    public function assertValid(): void
+    {
+        if ($this->handlers === []) {
+            throw InvalidCapabilityOptionsException::missingHandlers(Capability::LOGGING);
+        }
     }
 }

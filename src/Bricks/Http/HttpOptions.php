@@ -4,6 +4,8 @@ namespace Concept\Stack\Bricks\Http;
 
 use Closure;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
+use Concept\Stack\Capability\Capability;
+use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 use Psr\Http\Server\MiddlewareInterface;
 
 final class HttpOptions
@@ -87,5 +89,12 @@ final class HttpOptions
     public function setNotFoundMiddleware(MiddlewareInterface|Closure|string|null $notFoundMiddleware): void
     {
         $this->notFoundMiddleware = $notFoundMiddleware;
+    }
+
+    public function assertValid(): void
+    {
+        if ($this->routes === []) {
+            throw InvalidCapabilityOptionsException::missingOption(Capability::HTTP, 'routes');
+        }
     }
 }
