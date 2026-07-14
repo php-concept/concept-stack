@@ -11,6 +11,7 @@
     "require": {
         "php": "^8.4",
         "league/container": "^5.1",
+        "monolog/monolog": "^3",
         "php-concept/core-2": "^1.0",
         "php-concept/extension-casting-valinor": "^1.0",
         "php-concept/extension-console-symfony": "^1.0",
@@ -30,6 +31,16 @@
         "phpstan/phpstan": "^2.1"
     },
     "repositories": {
+        "extension-logger-monolog": {
+            "type": "path",
+            "url": "../concept-extensions/extension-logger-monolog",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-logger-monolog": "1.0.0"
+                }
+            }
+        },
         "extension-csrf": {
             "type": "path",
             "url": "../concept-extensions/extension-csrf",

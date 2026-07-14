@@ -2,26 +2,30 @@
 
 namespace Concept\Stack\Bricks\Logging;
 
+use Monolog\Handler\HandlerInterface;
+
 final class LoggingOptions
 {
-    private string $logFilePath = '';
+    /** @var list<HandlerInterface> */
+    private array $handlers = [];
 
     private string $level = 'debug';
-
-    private int $maxFiles = 7;
 
     private string $channel = 'app';
 
     private bool $masking = false;
 
-    public function logFilePath(): string
+    /**
+     * @return list<HandlerInterface>
+     */
+    public function handlers(): array
     {
-        return $this->logFilePath;
+        return $this->handlers;
     }
 
-    public function setLogFilePath(string $logFilePath): void
+    public function addHandler(HandlerInterface $handler): void
     {
-        $this->logFilePath = $logFilePath;
+        $this->handlers[] = $handler;
     }
 
     public function level(): string
@@ -32,16 +36,6 @@ final class LoggingOptions
     public function setLevel(string $level): void
     {
         $this->level = $level;
-    }
-
-    public function maxFiles(): int
-    {
-        return $this->maxFiles;
-    }
-
-    public function setMaxFiles(int $maxFiles): void
-    {
-        $this->maxFiles = $maxFiles;
     }
 
     public function channel(): string

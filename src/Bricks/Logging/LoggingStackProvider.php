@@ -28,9 +28,7 @@ final class LoggingStackProvider extends AbstractServiceProvider implements Boot
         $container = $this->getContainer();
 
         $container->addServiceProvider(new LoggerMonologServiceProvider(
-            logFilePath: $this->options->logFilePath(),
-            level: $this->options->level(),
-            maxFiles: $this->options->maxFiles(),
+            handlers: $this->options->handlers(),
             channel: $this->options->channel(),
             dataMaskerFactory: $this->options->masking()
                 ? OptionalDependency::factory($container, DataMaskerInterface::class)
