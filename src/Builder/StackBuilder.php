@@ -12,6 +12,8 @@ use Concept\Stack\Bricks\Logging\LoggingBuilder;
 use Concept\Stack\Bricks\Logging\LoggingOptions;
 use Concept\Stack\Bricks\Masking\MaskingBuilder;
 use Concept\Stack\Bricks\Masking\MaskingOptions;
+use Concept\Stack\Bricks\Session\SessionBuilder;
+use Concept\Stack\Bricks\Session\SessionOptions;
 use Concept\Stack\Bricks\Validation\ValidationBuilder;
 use Concept\Stack\Bricks\Validation\ValidationOptions;
 use Concept\Stack\Capability\CapabilityRegistry;
@@ -57,6 +59,11 @@ final class StackBuilder
     public function withHttp(): HttpBuilder
     {
         return new HttpBuilder($this, new HttpOptions());
+    }
+
+    public function withSession(): SessionBuilder
+    {
+        return new SessionBuilder($this, new SessionOptions());
     }
 
     /**
