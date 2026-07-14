@@ -23,6 +23,9 @@
         "php-concept/extension-logger-monolog": "^1.0",
         "php-concept/extension-session-symfony": "^1.0",
         "php-concept/extension-validation-rakit": "^1.0",
+        "php-concept/extension-view": "^1.0",
+        "php-concept/extension-view-plates": "^1.0",
+        "php-concept/extension-view-twig": "^1.0",
         "symfony/console": "^7.3",
         "symfony/http-foundation": "^7.2",
         "php-concept/extension-error-handler-whoops": "^1.0",
@@ -69,6 +72,36 @@
                 "symlink": true,
                 "versions": {
                     "php-concept/extension-session-symfony": "1.0.0"
+                }
+            }
+        },
+        "extension-view": {
+            "type": "path",
+            "url": "../concept-extensions/extension-view",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-view": "1.0.0"
+                }
+            }
+        },
+        "extension-view-plates": {
+            "type": "path",
+            "url": "../concept-extensions/extension-view-plates",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-view-plates": "1.0.0"
+                }
+            }
+        },
+        "extension-view-twig": {
+            "type": "path",
+            "url": "../concept-extensions/extension-view-twig",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-view-twig": "1.0.0"
                 }
             }
         }

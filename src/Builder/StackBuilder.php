@@ -18,6 +18,8 @@ use Concept\Stack\Bricks\Session\SessionBuilder;
 use Concept\Stack\Bricks\Session\SessionOptions;
 use Concept\Stack\Bricks\Validation\ValidationBuilder;
 use Concept\Stack\Bricks\Validation\ValidationOptions;
+use Concept\Stack\Bricks\View\ViewBuilder;
+use Concept\Stack\Bricks\View\ViewOptions;
 use Concept\Stack\Capability\CapabilityRegistry;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
@@ -71,6 +73,11 @@ final class StackBuilder
     public function withSession(): SessionBuilder
     {
         return new SessionBuilder($this, new SessionOptions());
+    }
+
+    public function withView(): ViewBuilder
+    {
+        return new ViewBuilder($this, new ViewOptions());
     }
 
     /**

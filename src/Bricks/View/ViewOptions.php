@@ -1,0 +1,126 @@
+<?php declare(strict_types=1);
+
+namespace Concept\Stack\Bricks\View;
+
+final class ViewOptions
+{
+    public const string ENGINE_TWIG = 'twig';
+    public const string ENGINE_PLATES = 'plates';
+
+    /** @var array<string, string> namespace => absolute filesystem path */
+    private array $paths = [];
+
+    /** @var list<class-string> */
+    private array $extensions = [];
+
+    /** @var array<string, string> */
+    private array $routeNamespace = [];
+
+    private ?string $engine = null;
+
+    private string $twigViewsPath = '';
+
+    private string $twigCacheDir = '';
+
+    private bool $twigDebug = false;
+
+    private string $platesViewsPath = '';
+
+    /**
+     * @return array<string, string>
+     */
+    public function paths(): array
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @param array<string, string> $paths namespace => absolute filesystem path
+     */
+    public function setPaths(array $paths): void
+    {
+        $this->paths = $paths;
+    }
+
+    /**
+     * @return list<class-string>
+     */
+    public function extensions(): array
+    {
+        return $this->extensions;
+    }
+
+    /**
+     * @param list<class-string> $extensions
+     */
+    public function setExtensions(array $extensions): void
+    {
+        $this->extensions = $extensions;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function routeNamespace(): array
+    {
+        return $this->routeNamespace;
+    }
+
+    /**
+     * @param array<string, string> $routeNamespace
+     */
+    public function setRouteNamespace(array $routeNamespace): void
+    {
+        $this->routeNamespace = $routeNamespace;
+    }
+
+    public function engine(): ?string
+    {
+        return $this->engine;
+    }
+
+    public function setEngine(string $engine): void
+    {
+        $this->engine = $engine;
+    }
+
+    public function twigViewsPath(): string
+    {
+        return $this->twigViewsPath;
+    }
+
+    public function setTwigViewsPath(string $twigViewsPath): void
+    {
+        $this->twigViewsPath = $twigViewsPath;
+    }
+
+    public function twigCacheDir(): string
+    {
+        return $this->twigCacheDir;
+    }
+
+    public function setTwigCacheDir(string $twigCacheDir): void
+    {
+        $this->twigCacheDir = $twigCacheDir;
+    }
+
+    public function twigDebug(): bool
+    {
+        return $this->twigDebug;
+    }
+
+    public function setTwigDebug(bool $twigDebug): void
+    {
+        $this->twigDebug = $twigDebug;
+    }
+
+    public function platesViewsPath(): string
+    {
+        return $this->platesViewsPath;
+    }
+
+    public function setPlatesViewsPath(string $platesViewsPath): void
+    {
+        $this->platesViewsPath = $platesViewsPath;
+    }
+}
