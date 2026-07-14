@@ -6,6 +6,8 @@ use Concept\Stack\Bricks\Casting\CastingBuilder;
 use Concept\Stack\Bricks\Casting\CastingOptions;
 use Concept\Stack\Bricks\Console\ConsoleBuilder;
 use Concept\Stack\Bricks\Console\ConsoleOptions;
+use Concept\Stack\Bricks\Database\DatabaseBuilder;
+use Concept\Stack\Bricks\Database\DatabaseOptions;
 use Concept\Stack\Bricks\Http\HttpBuilder;
 use Concept\Stack\Bricks\Http\HttpOptions;
 use Concept\Stack\Bricks\Logging\LoggingBuilder;
@@ -44,6 +46,11 @@ final class StackBuilder
     public function withCasting(): CastingBuilder
     {
         return new CastingBuilder($this, new CastingOptions());
+    }
+
+    public function withDatabase(): DatabaseBuilder
+    {
+        return new DatabaseBuilder($this, new DatabaseOptions());
     }
 
     public function withValidation(): ValidationBuilder

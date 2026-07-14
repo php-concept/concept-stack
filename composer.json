@@ -19,6 +19,7 @@
         "php-concept/extension-form-request": "^1.0",
         "php-concept/extension-http": "^1.0",
         "php-concept/extension-csrf": "^1.0",
+        "php-concept/extension-database-eloquent": "^1.0",
         "php-concept/extension-logger-monolog": "^1.0",
         "php-concept/extension-session-symfony": "^1.0",
         "php-concept/extension-validation-rakit": "^1.0",
@@ -48,6 +49,16 @@
                 "symlink": true,
                 "versions": {
                     "php-concept/extension-csrf": "1.0.0"
+                }
+            }
+        },
+        "extension-database-eloquent": {
+            "type": "path",
+            "url": "../concept-extensions/extension-database-eloquent",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-database-eloquent": "1.0.0"
                 }
             }
         },
