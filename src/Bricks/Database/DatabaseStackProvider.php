@@ -41,7 +41,7 @@ final class DatabaseStackProvider extends AbstractServiceProvider implements Boo
             dataMaskerFactory: $this->options->queryLogMasking()
                 ? OptionalDependency::factory($container, DataMaskerInterface::class)
                 : null,
-            emitQueryEvents: $this->options->queryTelemetry(),
+            emitQueryEvents: $this->options->emitQueryEvents(),
         ));
     }
 }

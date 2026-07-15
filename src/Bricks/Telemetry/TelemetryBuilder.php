@@ -37,7 +37,7 @@ final class TelemetryBuilder
 
     /**
      * Declares intent to emit DB query events. Requires withDatabase().
-     * Enable emission via DatabaseBuilder::withQueryTelemetry().
+     * Enable emission via DatabaseBuilder::withEmitQueryEvents().
      */
     public function dbQueries(bool $dbQueries = true): self
     {

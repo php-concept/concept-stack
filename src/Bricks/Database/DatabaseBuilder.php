@@ -77,9 +77,9 @@ final class DatabaseBuilder
     /**
      * Opt-in DatabaseQueryExecuted events. Requires the telemetry capability.
      */
-    public function withQueryTelemetry(): self
+    public function withEmitQueryEvents(): self
     {
-        $this->options->setQueryTelemetry(true);
+        $this->options->setEmitQueryEvents(true);
         $this->parent->require(Capability::DATABASE, Capability::TELEMETRY);
 
         return $this;

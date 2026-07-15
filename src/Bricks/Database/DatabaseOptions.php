@@ -26,7 +26,7 @@ final class DatabaseOptions
 
     private bool $queryLogMasking = false;
 
-    private bool $queryTelemetry = false;
+    private bool $emitQueryEvents = false;
 
     /**
      * @return array<string, mixed>
@@ -126,14 +126,14 @@ final class DatabaseOptions
         $this->queryLogMasking = $queryLogMasking;
     }
 
-    public function queryTelemetry(): bool
+    public function emitQueryEvents(): bool
     {
-        return $this->queryTelemetry;
+        return $this->emitQueryEvents;
     }
 
-    public function setQueryTelemetry(bool $queryTelemetry): void
+    public function setEmitQueryEvents(bool $emitQueryEvents): void
     {
-        $this->queryTelemetry = $queryTelemetry;
+        $this->emitQueryEvents = $emitQueryEvents;
     }
 
     public function assertValid(): void
