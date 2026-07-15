@@ -11,6 +11,9 @@ use Concept\Stack\Bricks\Console\ConsoleStackProvider;
 use Concept\Stack\Bricks\Database\DatabaseBuilder;
 use Concept\Stack\Bricks\Database\DatabaseOptions;
 use Concept\Stack\Bricks\Database\DatabaseStackProvider;
+use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingBuilder;
+use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingOptions;
+use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingStackProvider;
 use Concept\Stack\Bricks\Http\HttpBuilder;
 use Concept\Stack\Bricks\Http\HttpOptions;
 use Concept\Stack\Bricks\Http\HttpStackProvider;
@@ -23,6 +26,9 @@ use Concept\Stack\Bricks\Masking\MaskingStackProvider;
 use Concept\Stack\Bricks\Session\SessionBuilder;
 use Concept\Stack\Bricks\Session\SessionOptions;
 use Concept\Stack\Bricks\Session\SessionStackProvider;
+use Concept\Stack\Bricks\Telemetry\TelemetryBuilder;
+use Concept\Stack\Bricks\Telemetry\TelemetryOptions;
+use Concept\Stack\Bricks\Telemetry\TelemetryStackProvider;
 use Concept\Stack\Bricks\Validation\ValidationBuilder;
 use Concept\Stack\Bricks\Validation\ValidationOptions;
 use Concept\Stack\Bricks\Validation\ValidationStackProvider;
@@ -68,6 +74,30 @@ final class StackBuilder
         return new LoggingBuilder($this, $options);
     }
 
+    public function withTelemetry(): TelemetryBuilder
+    {
+        $options = new TelemetryOptions();
+        $this->registerCapability(
+            Capability::TELEMETRY,
+            new TelemetryStackProvider($options),
+            assertValid: static fn() => $options->assertValid(),
+        );
+
+        return new TelemetryBuilder($this, $options);
+    }
+
+    public function withErrorHandling(): ErrorHandlingBuilder
+    {
+        $options = new ErrorHandlingOptions();
+        $this->registerCapability(
+            Capability::ERROR_HANDLING,
+            new ErrorHandlingStackProvider($options),
+            assertValid: static fn() => $options->assertValid(),
+        );
+
+        return new ErrorHandlingBuilder($options);
+    }
+
     public function withCasting(): CastingBuilder
     {
         $options = new CastingOptions();
@@ -93,7 +123,7 @@ final class StackBuilder
         $options = new ValidationOptions();
         $this->registerCapability(Capability::VALIDATION, new ValidationStackProvider($options));
 
-        return new ValidationBuilder($options);
+        return new ValidationBuilder($this, $options);
     }
 
     public function withConsole(): ConsoleBuilder

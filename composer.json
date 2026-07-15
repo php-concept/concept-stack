@@ -20,8 +20,10 @@
         "php-concept/extension-http": "^1.0",
         "php-concept/extension-csrf": "^1.0",
         "php-concept/extension-database-eloquent": "^1.0",
+        "php-concept/extension-event": "^1.0",
         "php-concept/extension-logger-monolog": "^1.0",
         "php-concept/extension-session-symfony": "^1.0",
+        "php-concept/extension-telemetry": "^1.0",
         "php-concept/extension-validation-rakit": "^1.0",
         "php-concept/extension-view": "^1.0",
         "php-concept/extension-view-plates": "^1.0",
@@ -35,6 +37,36 @@
         "phpstan/phpstan": "^2.1"
     },
     "repositories": {
+        "extension-error-handler-whoops": {
+            "type": "path",
+            "url": "../concept-extensions/extension-error-handler-whoops",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-error-handler-whoops": "1.0.0"
+                }
+            }
+        },
+        "extension-telemetry": {
+            "type": "path",
+            "url": "../concept-extensions/extension-telemetry",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-telemetry": "1.0.0"
+                }
+            }
+        },
+        "extension-event": {
+            "type": "path",
+            "url": "../concept-extensions/extension-event",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-event": "1.0.0"
+                }
+            }
+        },
         "extension-logger-monolog": {
             "type": "path",
             "url": "../concept-extensions/extension-logger-monolog",
