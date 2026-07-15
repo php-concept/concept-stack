@@ -95,7 +95,7 @@ final class StackBuilder
             assertValid: static fn() => $options->assertValid(),
         );
 
-        return new ErrorHandlingBuilder($options);
+        return new ErrorHandlingBuilder($this, $options);
     }
 
     public function withCasting(): CastingBuilder

@@ -36,21 +36,6 @@ final class TelemetryBuilder
     }
 
     /**
-     * Declares intent to emit DB query events. Requires withDatabase().
-     * Enable emission via DatabaseBuilder::withEmitQueryEvents().
-     */
-    public function dbQueries(bool $dbQueries = true): self
-    {
-        $this->options->setDbQueries($dbQueries);
-
-        if ($dbQueries) {
-            $this->parent->require(Capability::TELEMETRY, Capability::DATABASE);
-        }
-
-        return $this;
-    }
-
-    /**
      * Event name used by TelemetryLogHandler when logs() is enabled.
      * Pass an application string — do not import Concept\App constants into stack.
      */

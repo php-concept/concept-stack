@@ -12,8 +12,6 @@ final class TelemetryOptions
 
     private bool $logs = false;
 
-    private bool $dbQueries = false;
-
     private string $eventName = '';
 
     /** @var list<class-string<ListenerSubscriber>> */
@@ -37,16 +35,6 @@ final class TelemetryOptions
     public function setLogs(bool $logs): void
     {
         $this->logs = $logs;
-    }
-
-    public function dbQueries(): bool
-    {
-        return $this->dbQueries;
-    }
-
-    public function setDbQueries(bool $dbQueries): void
-    {
-        $this->dbQueries = $dbQueries;
     }
 
     public function eventName(): string

@@ -81,8 +81,9 @@ new EventServiceProvider(
 | увімкнути boot-логіку | `->enabled(bool)` |
 | `TelemetryLogHandler` + `LogHandlerRegistry` (requires logging) | `->logs(bool)` |
 | event name для log handler | `->eventName(string)` |
-| declare DB intent (requires database) | `->dbQueries(bool)` — емісія через `withDatabase()->withEmitQueryEvents()` |
 | `$subscriberClasses` | `->subscribers([...])` |
+
+DB query events — лише `withDatabase()->withEmitQueryEvents()` (requires telemetry).
 
 ---
 
@@ -285,16 +286,19 @@ new ErrorHandlerWhoopsServiceProvider(
 )
 ```
 
-Також у container: `ExceptionReporterInterface`, `HttpErrorRendererInterface` з factories.
+Також у container: `ExceptionReporterInterface`, `HttpErrorRendererInterface` (stack recipes).
 
 | Param / wiring | Builder method |
 |----------------|----------------|
-| report handler у `$handlers` | `->exceptionReporter(fn(Container): ExceptionReporterInterface)` |
-| render handler у `$handlers` | `->httpErrorRenderer(fn(Container): HttpErrorRendererInterface)` |
 | debug vs prod chain | `->debug(bool)` |
-| PrettyPage (тощо) у debug | `->debugHttpHandler(fn(): HandlerInterface)` |
+| Whoops exception page (лише разом з `debug(true)`, non-JSON) | `->debugExceptionPage()` |
+| `Reporting\LoggerExceptionReporter` | `->reportToLog()` (requires logging) |
+| `Rendering\ViewHttpErrorRenderer` (HTML + Accept→JSON) | `->renderErrorPage($fallbackPath)` (requires view; XOR json) |
+| `Rendering\JsonHttpErrorRenderer` (API without view) | `->renderJson()` (requires http; XOR view) |
 
-Renderers (`TwigHttpErrorRenderer`, `AppExceptionReporter`) — **app glue**, не stack.
+| custom reporter / renderer / debug handler | `->reporter(...)` / `->renderer(...)` / `->debugHttpHandler(...)` або `->exceptionReporter(fn)` / `->httpErrorRenderer(fn)` |
+
+Recipes у `Concept\Stack\Bricks\ErrorHandling\{Reporting,Rendering}\` — Whoops extension лишається тонким.
 
 ---
 
@@ -304,13 +308,15 @@ Renderers (`TwigHttpErrorRenderer`, `AppExceptionReporter`) — **app glue**, н
 |--------|----------|
 | `withLogging()->withMasking()` | `logging` → `masking` |
 | `withTelemetry()->logs(true)` | `telemetry` → `logging` |
-| `withTelemetry()->dbQueries(true)` | `telemetry` → `database` |
 | `withDatabase()->withMasking()` | `database` → `masking` |
 | `withDatabase()->withEmitQueryEvents()` | `database` → `telemetry` |
 | `withValidation()->withMasking()` | `validation` → `masking` |
 | `withHttp()->withFormRequests()` | `http` → `validation` |
 | `withHttp()->withTypedRouteParameters()` | `http` → `casting` |
 | `withView()` | `view` → `http` (при реєстрації) |
+| `withErrorHandling()->reportToLog()` | `error-handling` → `logging` |
+| `withErrorHandling()->renderErrorPage(...)` | `error-handling` → `view` |
+| `withErrorHandling()->renderJson()` | `error-handling` → `http` |
 
 Перевірка на `providers()`.
 

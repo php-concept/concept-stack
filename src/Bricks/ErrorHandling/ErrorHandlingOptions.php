@@ -12,16 +12,26 @@ use Whoops\Handler\HandlerInterface;
 
 final class ErrorHandlingOptions
 {
+    private const string ERR_RENDERER_XOR = 'Capability "error-handling" accepts only one renderer: renderErrorPage() or renderJson().';
+
     private bool $debug = false;
 
-    /** @var Closure(DefinitionContainerInterface): ExceptionReporterInterface|null */
-    private ?Closure $exceptionReporterFactory = null;
+    private bool $debugExceptionPage = false;
 
-    /** @var Closure(DefinitionContainerInterface): HttpErrorRendererInterface|null */
-    private ?Closure $httpErrorRendererFactory = null;
+    private bool $reportToLog = false;
 
-    /** @var Closure(): HandlerInterface|null */
-    private ?Closure $debugHttpHandlerFactory = null;
+    private bool $renderJson = false;
+
+    private ?string $errorPageFallbackPath = null;
+
+    /** @var ExceptionReporterInterface|Closure(DefinitionContainerInterface): ExceptionReporterInterface|null */
+    private ExceptionReporterInterface|Closure|null $reporter = null;
+
+    /** @var HttpErrorRendererInterface|Closure(DefinitionContainerInterface): HttpErrorRendererInterface|null */
+    private HttpErrorRendererInterface|Closure|null $renderer = null;
+
+    /** @var HandlerInterface|Closure(): HandlerInterface|null */
+    private HandlerInterface|Closure|null $debugHttpHandler = null;
 
     public function debug(): bool
     {
@@ -33,62 +43,116 @@ final class ErrorHandlingOptions
         $this->debug = $debug;
     }
 
-    /**
-     * @return Closure(DefinitionContainerInterface): ExceptionReporterInterface|null
-     */
-    public function exceptionReporterFactory(): ?Closure
+    public function debugExceptionPage(): bool
     {
-        return $this->exceptionReporterFactory;
+        return $this->debugExceptionPage;
+    }
+
+    public function setDebugExceptionPage(bool $debugExceptionPage): void
+    {
+        $this->debugExceptionPage = $debugExceptionPage;
+    }
+
+    public function reportToLog(): bool
+    {
+        return $this->reportToLog;
+    }
+
+    public function setReportToLog(bool $reportToLog): void
+    {
+        $this->reportToLog = $reportToLog;
+    }
+
+    public function renderJson(): bool
+    {
+        return $this->renderJson;
+    }
+
+    public function setRenderJson(bool $renderJson): void
+    {
+        if ($renderJson && $this->errorPageFallbackPath !== null) {
+            throw new InvalidCapabilityOptionsException(self::ERR_RENDERER_XOR);
+        }
+
+        $this->renderJson = $renderJson;
+    }
+
+    public function errorPageFallbackPath(): ?string
+    {
+        return $this->errorPageFallbackPath;
+    }
+
+    public function setErrorPageFallbackPath(string $fallbackPath): void
+    {
+        if ($this->renderJson) {
+            throw new InvalidCapabilityOptionsException(self::ERR_RENDERER_XOR);
+        }
+
+        $this->errorPageFallbackPath = $fallbackPath;
     }
 
     /**
-     * @param Closure(DefinitionContainerInterface): ExceptionReporterInterface $factory
+     * @return ExceptionReporterInterface|Closure(DefinitionContainerInterface): ExceptionReporterInterface|null
      */
-    public function setExceptionReporterFactory(Closure $factory): void
+    public function reporter(): ExceptionReporterInterface|Closure|null
     {
-        $this->exceptionReporterFactory = $factory;
+        return $this->reporter;
     }
 
     /**
-     * @return Closure(DefinitionContainerInterface): HttpErrorRendererInterface|null
+     * @param ExceptionReporterInterface|Closure(DefinitionContainerInterface): ExceptionReporterInterface $reporter
      */
-    public function httpErrorRendererFactory(): ?Closure
+    public function setReporter(ExceptionReporterInterface|Closure $reporter): void
     {
-        return $this->httpErrorRendererFactory;
+        $this->reporter = $reporter;
     }
 
     /**
-     * @param Closure(DefinitionContainerInterface): HttpErrorRendererInterface $factory
+     * @return HttpErrorRendererInterface|Closure(DefinitionContainerInterface): HttpErrorRendererInterface|null
      */
-    public function setHttpErrorRendererFactory(Closure $factory): void
+    public function renderer(): HttpErrorRendererInterface|Closure|null
     {
-        $this->httpErrorRendererFactory = $factory;
+        return $this->renderer;
     }
 
     /**
-     * @return Closure(): HandlerInterface|null
+     * @param HttpErrorRendererInterface|Closure(DefinitionContainerInterface): HttpErrorRendererInterface $renderer
      */
-    public function debugHttpHandlerFactory(): ?Closure
+    public function setRenderer(HttpErrorRendererInterface|Closure $renderer): void
     {
-        return $this->debugHttpHandlerFactory;
+        $this->renderer = $renderer;
     }
 
     /**
-     * @param Closure(): HandlerInterface $factory
+     * @return HandlerInterface|Closure(): HandlerInterface|null
      */
-    public function setDebugHttpHandlerFactory(Closure $factory): void
+    public function debugHttpHandler(): HandlerInterface|Closure|null
     {
-        $this->debugHttpHandlerFactory = $factory;
+        return $this->debugHttpHandler;
+    }
+
+    /**
+     * @param HandlerInterface|Closure(): HandlerInterface $handler
+     */
+    public function setDebugHttpHandler(HandlerInterface|Closure $handler): void
+    {
+        $this->debugHttpHandler = $handler;
     }
 
     public function assertValid(): void
     {
-        if ($this->exceptionReporterFactory === null) {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::ERROR_HANDLING, 'exceptionReporter');
+        if ($this->reporter === null && !$this->reportToLog) {
+            throw InvalidCapabilityOptionsException::missingOption(
+                Capability::ERROR_HANDLING,
+                'reportToLog()/reporter()',
+            );
         }
 
-        if ($this->httpErrorRendererFactory === null) {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::ERROR_HANDLING, 'httpErrorRenderer');
+        if ($this->renderer === null && $this->errorPageFallbackPath === null && !$this->renderJson) {
+            throw InvalidCapabilityOptionsException::missingOption(
+                Capability::ERROR_HANDLING,
+                'renderErrorPage()/renderJson()/renderer()',
+            );
         }
     }
 }
