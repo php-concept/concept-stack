@@ -282,23 +282,21 @@ XOR: лише один engine — `withTwig()` **або** `withPlates()`.
 
 ```php
 new ErrorHandlerWhoopsServiceProvider(
-    handlers: array = [], // list<HandlerInterface>
+    exceptionReporterFactory: Closure,           // Closure(): ExceptionReporterInterface
+    httpErrorRendererFactory: Closure,           // Closure(): HttpErrorRendererInterface
+    debugHttpHandlerFactory: ?Closure = null,    // Closure(): HandlerInterface|null — null → prod HTTP render
 )
 ```
 
-Також у container: `ExceptionReporterInterface`, `HttpErrorRendererInterface` (stack recipes).
+Реєструє в container: `ExceptionReporterInterface`, `HttpErrorRendererInterface`. Будує Whoops awake chain (report → PlainText | debug | render).
 
-| Param / wiring | Builder method |
-|----------------|----------------|
-| debug vs prod chain | `->debug(bool)` |
-| Whoops exception page (лише разом з `debug(true)`, non-JSON) | `->debugExceptionPage()` |
-| `Reporting\LoggerExceptionReporter` | `->reportToLog()` (requires logging) |
-| `Rendering\ViewHttpErrorRenderer` (HTML + Accept→JSON) | `->renderErrorPage($fallbackPath)` (requires view; XOR json) |
-| `Rendering\JsonHttpErrorRenderer` (API without view) | `->renderJson()` (requires http; XOR view) |
+| Param SP | Builder method |
+|----------|----------------|
+| `$exceptionReporterFactory` | `->reportToLog()` / `->reporter(...)` / `->exceptionReporter(fn)` |
+| `$httpErrorRendererFactory` | `->renderHtmlErrorPage($path = '')` / `->renderJson()` / `->renderer(...)` |
+| `$debugHttpHandlerFactory` | stack: `debug(true)` + `->showDebugExceptionPage()` + `!expectsJson` → PrettyPage або null |
 
-| custom reporter / renderer / debug handler | `->reporter(...)` / `->renderer(...)` / `->debugHttpHandler(...)` або `->exceptionReporter(fn)` / `->httpErrorRenderer(fn)` |
-
-Recipes у `Concept\Stack\Bricks\ErrorHandling\{Reporting,Rendering}\` — Whoops extension лишається тонким.
+Один debug closure замість `debug` + `debugHttpHandlerFactory` + `useDebugHttpHandler` — уся умова в stack.
 
 ---
 
@@ -315,7 +313,7 @@ Recipes у `Concept\Stack\Bricks\ErrorHandling\{Reporting,Rendering}\` — Whoop
 | `withHttp()->withTypedRouteParameters()` | `http` → `casting` |
 | `withView()` | `view` → `http` (при реєстрації) |
 | `withErrorHandling()->reportToLog()` | `error-handling` → `logging` |
-| `withErrorHandling()->renderErrorPage(...)` | `error-handling` → `view` |
+| `withErrorHandling()->renderHtmlErrorPage(...)` | `error-handling` → `view` |
 | `withErrorHandling()->renderJson()` | `error-handling` → `http` |
 
 Перевірка на `providers()`.

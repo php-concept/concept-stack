@@ -12,17 +12,7 @@ use Whoops\Handler\HandlerInterface;
 
 final class ErrorHandlingOptions
 {
-    private const string ERR_RENDERER_XOR = 'Capability "error-handling" accepts only one renderer: renderErrorPage() or renderJson().';
-
     private bool $debug = false;
-
-    private bool $debugExceptionPage = false;
-
-    private bool $reportToLog = false;
-
-    private bool $renderJson = false;
-
-    private ?string $errorPageFallbackPath = null;
 
     /** @var ExceptionReporterInterface|Closure(DefinitionContainerInterface): ExceptionReporterInterface|null */
     private ExceptionReporterInterface|Closure|null $reporter = null;
@@ -43,52 +33,14 @@ final class ErrorHandlingOptions
         $this->debug = $debug;
     }
 
-    public function debugExceptionPage(): bool
+    public function hasReporter(): bool
     {
-        return $this->debugExceptionPage;
+        return $this->reporter !== null;
     }
 
-    public function setDebugExceptionPage(bool $debugExceptionPage): void
+    public function hasRenderer(): bool
     {
-        $this->debugExceptionPage = $debugExceptionPage;
-    }
-
-    public function reportToLog(): bool
-    {
-        return $this->reportToLog;
-    }
-
-    public function setReportToLog(bool $reportToLog): void
-    {
-        $this->reportToLog = $reportToLog;
-    }
-
-    public function renderJson(): bool
-    {
-        return $this->renderJson;
-    }
-
-    public function setRenderJson(bool $renderJson): void
-    {
-        if ($renderJson && $this->errorPageFallbackPath !== null) {
-            throw new InvalidCapabilityOptionsException(self::ERR_RENDERER_XOR);
-        }
-
-        $this->renderJson = $renderJson;
-    }
-
-    public function errorPageFallbackPath(): ?string
-    {
-        return $this->errorPageFallbackPath;
-    }
-
-    public function setErrorPageFallbackPath(string $fallbackPath): void
-    {
-        if ($this->renderJson) {
-            throw new InvalidCapabilityOptionsException(self::ERR_RENDERER_XOR);
-        }
-
-        $this->errorPageFallbackPath = $fallbackPath;
+        return $this->renderer !== null;
     }
 
     /**
@@ -141,17 +93,17 @@ final class ErrorHandlingOptions
 
     public function assertValid(): void
     {
-        if ($this->reporter === null && !$this->reportToLog) {
+        if ($this->reporter === null) {
             throw InvalidCapabilityOptionsException::missingOption(
                 Capability::ERROR_HANDLING,
                 'reportToLog()/reporter()',
             );
         }
 
-        if ($this->renderer === null && $this->errorPageFallbackPath === null && !$this->renderJson) {
+        if ($this->renderer === null) {
             throw InvalidCapabilityOptionsException::missingOption(
                 Capability::ERROR_HANDLING,
-                'renderErrorPage()/renderJson()/renderer()',
+                'renderHtmlErrorPage()/renderJson()/renderer()',
             );
         }
     }

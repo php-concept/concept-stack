@@ -16,7 +16,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
 /**
- * Stack recipe: view templates (@ns/errors/{code}) + JSON Accept negotiation + PHP fallback files.
+ * Stack recipe: view templates (@ns/errors/{code}) + JSON Accept negotiation + optional PHP fallback files.
  * Requires the view capability (and thus http).
  */
 final class ViewHttpErrorRenderer implements HttpErrorRendererInterface
@@ -32,7 +32,7 @@ final class ViewHttpErrorRenderer implements HttpErrorRendererInterface
         private readonly RequestFormat $requestFormat,
         private readonly ViewRouteNamespaceResolver $routeNamespaceResolver,
         private readonly ExceptionReporterInterface $exceptionReporter,
-        private readonly string $fallbackPath,
+        private readonly string $fallbackPath = '',
     ) {}
 
     /**
@@ -66,13 +66,10 @@ final class ViewHttpErrorRenderer implements HttpErrorRendererInterface
 
     private function renderFallback(int $code): ResponseInterface
     {
-        $file = sprintf(self::FALLBACK_FILE_FORMAT, $this->fallbackPath, $code);
-        if (!is_file($file)) {
-            $file = sprintf(self::FALLBACK_FILE_FORMAT, $this->fallbackPath, HttpStatusCode::INTERNAL_SERVER_ERROR);
-        }
-
         ob_start();
-        if (is_file($file)) {
+
+        $file = $this->resolveFallbackFile($code);
+        if ($file !== null) {
             include $file;
         } else {
             echo sprintf(
@@ -86,5 +83,24 @@ final class ViewHttpErrorRenderer implements HttpErrorRendererInterface
         $response->getBody()->write((string) ob_get_clean());
 
         return $response->withHeader(HttpHeader::CONTENT_TYPE, HttpValue::HTML);
+    }
+
+    private function resolveFallbackFile(int $code): ?string
+    {
+        if ($this->fallbackPath === '') {
+            return null;
+        }
+
+        $file = sprintf(self::FALLBACK_FILE_FORMAT, $this->fallbackPath, $code);
+        if (is_file($file)) {
+            return $file;
+        }
+
+        $file = sprintf(self::FALLBACK_FILE_FORMAT, $this->fallbackPath, HttpStatusCode::INTERNAL_SERVER_ERROR);
+        if (is_file($file)) {
+            return $file;
+        }
+
+        return null;
     }
 }

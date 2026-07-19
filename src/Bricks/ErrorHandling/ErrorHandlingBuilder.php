@@ -3,16 +3,28 @@
 namespace Concept\Stack\Bricks\ErrorHandling;
 
 use Closure;
+use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
+use Concept\Stack\Bricks\ErrorHandling\Reporting\LoggerExceptionReporter;
+use Concept\Stack\Bricks\ErrorHandling\Rendering\JsonHttpErrorRenderer;
+use Concept\Stack\Bricks\ErrorHandling\Rendering\ViewHttpErrorRenderer;
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
+use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
+use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
+use Concept\Extensions\Http\Requests\RequestFormat;
+use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
+use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
+use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use League\Container\DefinitionContainerInterface;
 use Whoops\Handler\HandlerInterface;
 use Whoops\Handler\PrettyPageHandler;
 
 final class ErrorHandlingBuilder
 {
+    private const string ERR_RENDERER_ALREADY_SET = 'Capability "error-handling" renderer is already set.';
+
     public function __construct(
         private readonly StackBuilder $parent,
         private readonly ErrorHandlingOptions $options,
@@ -28,44 +40,62 @@ final class ErrorHandlingBuilder
     /**
      * Whoops exception page for debug web requests (non-JSON). Used only when debug(true).
      */
-    public function debugExceptionPage(): self
+    public function showDebugExceptionPage(): self
     {
-        $this->options->setDebugExceptionPage(true);
         $this->options->setDebugHttpHandler(static fn(): PrettyPageHandler => new PrettyPageHandler());
 
         return $this;
     }
 
     /**
-     * Report exceptions via php error_log + LoggerInterface. Requires withLogging().
+     * Stack recipe: LoggerExceptionReporter. Requires withLogging().
      */
     public function reportToLog(): self
     {
-        $this->options->setReportToLog(true);
         $this->parent->require(Capability::ERROR_HANDLING, Capability::LOGGING);
+        $this->options->setReporter(static function(DefinitionContainerInterface $container): ExceptionReporterInterface {
+            return new LoggerExceptionReporter(
+                logger: ContainerDependency::get($container, LoggerInterface::class),
+            );
+        });
 
         return $this;
     }
 
     /**
-     * HTML error pages via view (@ns/errors/{code}) + PHP fallback; JSON when request expects it.
-     * Requires withView(). XOR with renderJson().
+     * Stack recipe: ViewHttpErrorRenderer (@ns/errors/{code} + PHP fallback; JSON by Accept).
+     * Requires withView(). Optional $fallbackPath — absolute dir with {code}.php; empty skips PHP files.
      */
-    public function renderErrorPage(string $fallbackPath): self
+    public function renderHtmlErrorPage(string $fallbackPath = ''): self
     {
-        $this->options->setErrorPageFallbackPath($fallbackPath);
+        $this->assertRendererUnset();
         $this->parent->require(Capability::ERROR_HANDLING, Capability::VIEW);
+        $this->options->setRenderer(static function(DefinitionContainerInterface $container) use ($fallbackPath): HttpErrorRendererInterface {
+            return new ViewHttpErrorRenderer(
+                responseFactory: ContainerDependency::get($container, ResponseFactoryInterface::class),
+                viewResponse: ContainerDependency::get($container, ViewResponseFactoryInterface::class),
+                requestFormat: ContainerDependency::get($container, RequestFormat::class),
+                routeNamespaceResolver: ContainerDependency::get($container, ViewRouteNamespaceResolver::class),
+                exceptionReporter: ContainerDependency::get($container, ExceptionReporterInterface::class),
+                fallbackPath: $fallbackPath,
+            );
+        });
 
         return $this;
     }
 
     /**
-     * JSON-only HTTP errors (API without view). Requires withHttp(). XOR with renderErrorPage().
+     * Stack recipe: JsonHttpErrorRenderer (API without view). Requires withHttp(). XOR with renderHtmlErrorPage().
      */
     public function renderJson(): self
     {
-        $this->options->setRenderJson(true);
+        $this->assertRendererUnset();
         $this->parent->require(Capability::ERROR_HANDLING, Capability::HTTP);
+        $this->options->setRenderer(static function(DefinitionContainerInterface $container): HttpErrorRendererInterface {
+            return new JsonHttpErrorRenderer(
+                responseFactory: ContainerDependency::get($container, ResponseFactoryInterface::class),
+            );
+        });
 
         return $this;
     }
@@ -118,5 +148,12 @@ final class ErrorHandlingBuilder
         $this->options->setDebugHttpHandler($handler);
 
         return $this;
+    }
+
+    private function assertRendererUnset(): void
+    {
+        if ($this->options->hasRenderer()) {
+            throw new InvalidCapabilityOptionsException(self::ERR_RENDERER_ALREADY_SET);
+        }
     }
 }

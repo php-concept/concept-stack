@@ -7,22 +7,14 @@ use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Extensions\ErrorHandlerWhoops\ErrorHandlerWhoopsServiceProvider;
-use Concept\Extensions\ErrorHandlerWhoops\Handlers\RenderHttpErrorHandler;
-use Concept\Extensions\ErrorHandlerWhoops\Handlers\ReportExceptionHandler;
-use Concept\Extensions\Http\Contracts\ResponseFactoryInterface;
 use Concept\Extensions\Http\Requests\RequestFormat;
-use Concept\Extensions\LoggerMonolog\Contracts\LoggerInterface;
-use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
-use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
-use Concept\Stack\Bricks\ErrorHandling\Reporting\LoggerExceptionReporter;
-use Concept\Stack\Bricks\ErrorHandling\Rendering\JsonHttpErrorRenderer;
-use Concept\Stack\Bricks\ErrorHandling\Rendering\ViewHttpErrorRenderer;
+use Concept\Stack\Capability\Capability;
+use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Whoops\Handler\HandlerInterface;
-use Whoops\Handler\PlainTextHandler;
 
 final class ErrorHandlingStackProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -43,120 +35,80 @@ final class ErrorHandlingStackProvider extends AbstractServiceProvider implement
     {
         $container = $this->getContainer();
 
-        $container->add(
-            ExceptionReporterInterface::class,
-            fn(): ExceptionReporterInterface => $this->resolveReporter($container),
-        )->setShared(true);
-
-        $container->add(
-            HttpErrorRendererInterface::class,
-            fn(): HttpErrorRendererInterface => $this->resolveRenderer($container),
-        )->setShared(true);
-
         $container->addServiceProvider(new ErrorHandlerWhoopsServiceProvider(
-            handlers: $this->buildAwakeHandlers($container),
+            exceptionReporterFactory: fn(): ExceptionReporterInterface => $this->resolveReporter($container),
+            httpErrorRendererFactory: fn(): HttpErrorRendererInterface => $this->resolveRenderer($container),
+            debugHttpHandlerFactory: $this->createDebugHttpHandlerFactory(),
         ));
     }
 
     private function resolveReporter(DefinitionContainerInterface $container): ExceptionReporterInterface
     {
-        $custom = $this->options->reporter();
+        $reporter = $this->options->reporter();
 
-        if ($custom instanceof ExceptionReporterInterface) {
-            return $custom;
+        if ($reporter instanceof ExceptionReporterInterface) {
+            return $reporter;
         }
 
-        if ($custom instanceof Closure) {
-            return $custom($container);
+        if ($reporter instanceof Closure) {
+            return $reporter($container);
         }
 
-        return new LoggerExceptionReporter(
-            logger: ContainerDependency::get($container, LoggerInterface::class),
-            container: $container,
+        throw InvalidCapabilityOptionsException::missingOption(
+            Capability::ERROR_HANDLING,
+            'reportToLog()/reporter()',
         );
     }
 
     private function resolveRenderer(DefinitionContainerInterface $container): HttpErrorRendererInterface
     {
-        $custom = $this->options->renderer();
+        $renderer = $this->options->renderer();
 
-        if ($custom instanceof HttpErrorRendererInterface) {
-            return $custom;
+        if ($renderer instanceof HttpErrorRendererInterface) {
+            return $renderer;
         }
 
-        if ($custom instanceof Closure) {
-            return $custom($container);
+        if ($renderer instanceof Closure) {
+            return $renderer($container);
         }
 
-        if ($this->options->renderJson()) {
-            return new JsonHttpErrorRenderer(
-                responseFactory: ContainerDependency::get($container, ResponseFactoryInterface::class),
-            );
-        }
-
-        $fallbackPath = $this->options->errorPageFallbackPath();
-        assert($fallbackPath !== null);
-
-        return new ViewHttpErrorRenderer(
-            responseFactory: ContainerDependency::get($container, ResponseFactoryInterface::class),
-            viewResponse: ContainerDependency::get($container, ViewResponseFactoryInterface::class),
-            requestFormat: ContainerDependency::get($container, RequestFormat::class),
-            routeNamespaceResolver: ContainerDependency::get($container, ViewRouteNamespaceResolver::class),
-            exceptionReporter: ContainerDependency::get($container, ExceptionReporterInterface::class),
-            fallbackPath: $fallbackPath,
+        throw InvalidCapabilityOptionsException::missingOption(
+            Capability::ERROR_HANDLING,
+            'renderHtmlErrorPage()/renderJson()/renderer()',
         );
     }
 
     /**
-     * @return list<HandlerInterface>
+     * @return null|(Closure(): ?HandlerInterface)
      */
-    private function buildAwakeHandlers(DefinitionContainerInterface $container): array
+    private function createDebugHttpHandlerFactory(): ?Closure
     {
-        $handlers = [
-            new ReportExceptionHandler(
-                fn(): ExceptionReporterInterface => ContainerDependency::get($container, ExceptionReporterInterface::class),
-            ),
-        ];
-
-        if (PHP_SAPI === 'cli') {
-            $handlers[] = new PlainTextHandler();
-
-            return $handlers;
+        if (!$this->options->debug()) {
+            return null;
         }
 
-        $debugHandler = $this->resolveDebugHttpHandler();
-
-        if ($this->options->debug() && $debugHandler !== null && !$this->requestExpectsJson($container)) {
-            $handlers[] = $debugHandler;
-
-            return $handlers;
-        }
-
-        $handlers[] = new RenderHttpErrorHandler(
-            fn(): HttpErrorRendererInterface => ContainerDependency::get($container, HttpErrorRendererInterface::class),
-            $container,
-        );
-
-        return $handlers;
-    }
-
-    private function resolveDebugHttpHandler(): ?HandlerInterface
-    {
         $handler = $this->options->debugHttpHandler();
-
         if ($handler === null) {
             return null;
         }
 
-        if ($handler instanceof HandlerInterface) {
-            return $handler;
-        }
+        return function() use ($handler): ?HandlerInterface {
+            if ($this->requestExpectsJson()) {
+                return null;
+            }
 
-        return $handler();
+            if ($handler instanceof HandlerInterface) {
+                return $handler;
+            }
+
+            return $handler();
+        };
     }
 
-    private function requestExpectsJson(DefinitionContainerInterface $container): bool
+    private function requestExpectsJson(): bool
     {
+        $container = $this->getContainer();
+
         if (!$container->has(ServerRequestInterface::class) || !$container->has(RequestFormat::class)) {
             return false;
         }
