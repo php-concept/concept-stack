@@ -3,7 +3,6 @@
 namespace Concept\Stack\Bricks\Telemetry;
 
 use Concept\Core\Container\ContainerDependency;
-use Concept\Extensions\Event\EventServiceProvider;
 use Concept\Extensions\LoggerMonolog\LogHandlerRegistry;
 use Concept\Extensions\Telemetry\Handlers\TelemetryLogHandler;
 use Concept\Extensions\Telemetry\TelemetryCollector;
@@ -51,12 +50,5 @@ final class TelemetryStackProvider extends AbstractServiceProvider implements Bo
             }
         }
 
-        $subscribers = $this->options->subscribers();
-
-        if ($subscribers === []) {
-            return;
-        }
-
-        $container->addServiceProvider(new EventServiceProvider($subscribers));
     }
 }

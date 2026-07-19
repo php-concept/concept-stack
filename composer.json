@@ -31,12 +31,23 @@
         "symfony/console": "^7.3",
         "symfony/http-foundation": "^7.2",
         "php-concept/extension-error-handler-whoops": "^1.0",
-        "psr/http-server-middleware": "^1.0"
+        "psr/http-server-middleware": "^1.0",
+        "php-concept/extension-components": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1"
     },
     "repositories": {
+        "extension-components": {
+            "type": "path",
+            "url": "../concept-extensions/extension-components",
+            "options": {
+                "symlink": true,
+                "versions": {
+                    "php-concept/extension-components": "1.0.0"
+                }
+            }
+        },
         "extension-error-handler-whoops": {
             "type": "path",
             "url": "../concept-extensions/extension-error-handler-whoops",

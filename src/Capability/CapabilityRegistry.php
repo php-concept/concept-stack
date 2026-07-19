@@ -51,4 +51,51 @@ final class CapabilityRegistry
             }
         }
     }
+
+    /**
+     * Returns a stable topological order: dependencies before their consumers,
+     * preserving registration order where no dependency constrains it.
+     *
+     * @return list<string>
+     */
+    public function orderedNames(): array
+    {
+        $this->assertDependencies();
+
+        $ordered = [];
+        $visiting = [];
+        $visited = [];
+
+        foreach (array_keys($this->capabilities) as $name) {
+            $this->visit($name, $visiting, $visited, $ordered);
+        }
+
+        return $ordered;
+    }
+
+    /**
+     * @param array<string, true> $visiting
+     * @param array<string, true> $visited
+     * @param list<string> $ordered
+     */
+    private function visit(string $name, array &$visiting, array &$visited, array &$ordered): void
+    {
+        if (isset($visited[$name])) {
+            return;
+        }
+
+        if (isset($visiting[$name])) {
+            throw InvalidCapabilityOptionsException::circularDependency($name);
+        }
+
+        $visiting[$name] = true;
+
+        foreach ($this->capabilities[$name] as $dependency) {
+            $this->visit($dependency, $visiting, $visited, $ordered);
+        }
+
+        unset($visiting[$name]);
+        $visited[$name] = true;
+        $ordered[] = $name;
+    }
 }

@@ -4,7 +4,6 @@ namespace Concept\Stack\Bricks\Telemetry;
 
 use Concept\Stack\Capability\Capability;
 use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
-use League\Event\ListenerSubscriber;
 
 final class TelemetryOptions
 {
@@ -13,9 +12,6 @@ final class TelemetryOptions
     private bool $logs = false;
 
     private string $eventName = '';
-
-    /** @var list<class-string<ListenerSubscriber>> */
-    private array $subscribers = [];
 
     public function enabled(): bool
     {
@@ -45,22 +41,6 @@ final class TelemetryOptions
     public function setEventName(string $eventName): void
     {
         $this->eventName = $eventName;
-    }
-
-    /**
-     * @return list<class-string<ListenerSubscriber>>
-     */
-    public function subscribers(): array
-    {
-        return $this->subscribers;
-    }
-
-    /**
-     * @param list<class-string<ListenerSubscriber>> $subscribers
-     */
-    public function setSubscribers(array $subscribers): void
-    {
-        $this->subscribers = $subscribers;
     }
 
     public function assertValid(): void

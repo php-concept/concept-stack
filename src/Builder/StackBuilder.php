@@ -8,12 +8,18 @@ use Concept\Stack\Bricks\Casting\CastingStackProvider;
 use Concept\Stack\Bricks\Console\ConsoleBuilder;
 use Concept\Stack\Bricks\Console\ConsoleOptions;
 use Concept\Stack\Bricks\Console\ConsoleStackProvider;
+use Concept\Stack\Bricks\Components\ComponentsBuilder;
+use Concept\Stack\Bricks\Components\ComponentsOptions;
+use Concept\Stack\Bricks\Components\ComponentsStackProvider;
 use Concept\Stack\Bricks\Database\DatabaseBuilder;
 use Concept\Stack\Bricks\Database\DatabaseOptions;
 use Concept\Stack\Bricks\Database\DatabaseStackProvider;
 use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingBuilder;
 use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingOptions;
 use Concept\Stack\Bricks\ErrorHandling\ErrorHandlingStackProvider;
+use Concept\Stack\Bricks\Events\EventsBuilder;
+use Concept\Stack\Bricks\Events\EventsOptions;
+use Concept\Stack\Bricks\Events\EventsStackProvider;
 use Concept\Stack\Bricks\Http\HttpBuilder;
 use Concept\Stack\Bricks\Http\HttpOptions;
 use Concept\Stack\Bricks\Http\HttpStackProvider;
@@ -41,8 +47,11 @@ use League\Container\ServiceProvider\ServiceProviderInterface;
 
 final class StackBuilder
 {
+    /** @var array<string, ServiceProviderInterface> */
+    private array $capabilityProviders = [];
+
     /** @var list<ServiceProviderInterface> */
-    private array $providers = [];
+    private array $additionalProviders = [];
 
     /** @var list<callable(): void> */
     private array $optionValidators = [];
@@ -72,6 +81,14 @@ final class StackBuilder
         );
 
         return new LoggingBuilder($this, $options);
+    }
+
+    public function withEvents(): EventsBuilder
+    {
+        $options = new EventsOptions();
+        $this->registerCapability(Capability::EVENTS, new EventsStackProvider($options));
+
+        return new EventsBuilder($options);
     }
 
     public function withTelemetry(): TelemetryBuilder
@@ -134,6 +151,14 @@ final class StackBuilder
         return new ConsoleBuilder($options);
     }
 
+    public function withComponents(): ComponentsBuilder
+    {
+        $options = new ComponentsOptions();
+        $this->registerCapability(Capability::COMPONENTS, new ComponentsStackProvider($options));
+
+        return new ComponentsBuilder($this, $options);
+    }
+
     public function withHttp(): HttpBuilder
     {
         $options = new HttpOptions();
@@ -178,7 +203,7 @@ final class StackBuilder
         ?callable $assertValid = null,
     ): void {
         $this->capabilities->register($name, $requires);
-        $this->providers[] = $provider;
+        $this->capabilityProviders[$name] = $provider;
 
         if ($assertValid !== null) {
             $this->optionValidators[] = $assertValid;
@@ -200,7 +225,7 @@ final class StackBuilder
      */
     public function addProvider(ServiceProviderInterface $provider): self
     {
-        $this->providers[] = $provider;
+        $this->additionalProviders[] = $provider;
 
         return $this;
     }
@@ -214,8 +239,11 @@ final class StackBuilder
             $assertValid();
         }
 
-        $this->capabilities->assertDependencies();
+        $providers = [];
+        foreach ($this->capabilities->orderedNames() as $name) {
+            $providers[] = $this->capabilityProviders[$name];
+        }
 
-        return $this->providers;
+        return [...$providers, ...$this->additionalProviders];
     }
 }

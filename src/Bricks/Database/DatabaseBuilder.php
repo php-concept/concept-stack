@@ -75,12 +75,12 @@ final class DatabaseBuilder
     }
 
     /**
-     * Opt-in DatabaseQueryExecuted events. Requires the telemetry capability.
+     * Opt-in DatabaseQueryExecuted events. Requires the events capability.
      */
     public function withEmitQueryEvents(): self
     {
         $this->options->setEmitQueryEvents(true);
-        $this->parent->require(Capability::DATABASE, Capability::TELEMETRY);
+        $this->parent->require(Capability::DATABASE, Capability::EVENTS);
 
         return $this;
     }

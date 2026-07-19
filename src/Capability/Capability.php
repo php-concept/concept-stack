@@ -9,6 +9,7 @@ final class Capability
 {
     public const string LOGGING = 'logging';
     public const string MASKING = 'masking';
+    public const string EVENTS = 'events';
     public const string TELEMETRY = 'telemetry';
     public const string VALIDATION = 'validation';
     public const string FLASH_VALIDATION = 'flash-validation';
@@ -18,6 +19,7 @@ final class Capability
     public const string CSRF = 'csrf';
     public const string HTTP = 'http';
     public const string CONSOLE = 'console';
+    public const string COMPONENTS = 'components';
     public const string VIEW = 'view';
     public const string ERROR_HANDLING = 'error-handling';
 }

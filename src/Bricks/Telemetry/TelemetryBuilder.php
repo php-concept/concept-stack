@@ -4,7 +4,6 @@ namespace Concept\Stack\Bricks\Telemetry;
 
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use League\Event\ListenerSubscriber;
 
 final class TelemetryBuilder
 {
@@ -46,13 +45,4 @@ final class TelemetryBuilder
         return $this;
     }
 
-    /**
-     * @param list<class-string<ListenerSubscriber>> $subscribers
-     */
-    public function subscribers(array $subscribers): self
-    {
-        $this->options->setSubscribers($subscribers);
-
-        return $this;
-    }
 }

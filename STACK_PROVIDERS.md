@@ -12,13 +12,15 @@ Entry: `ConceptStack::create(): StackBuilder` → `providers()`.
 |-------|------------|-------------------|
 | `withMasking()` | `masking` | `DataMaskerServiceProvider` |
 | `withLogging()` | `logging` | `LoggerMonologServiceProvider` |
-| `withTelemetry()` | `telemetry` | `TelemetryServiceProvider` (+ `EventServiceProvider` якщо є subscribers) |
+| `withEvents()` | `events` | `EventServiceProvider` |
+| `withTelemetry()` | `telemetry` | `TelemetryServiceProvider` |
 | `withCasting()` | `casting` | `CastingServiceProvider` |
 | `withValidation()` | `validation` | `ValidationServiceProvider` + `FormRequestServiceProvider` |
 | `withDatabase()` | `database` | `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider` |
 | `withSession()` | `session` | `SessionServiceProvider` (+ `CsrfServiceProvider` якщо `withCsrf()`) |
 | `withHttp()` | `http` | **core** `HttpKernelServiceProvider` + `HttpServiceProvider` |
 | `withConsole()` | `console` | `ConsoleSymfonyServiceProvider` |
+| `withComponents()` | `components` | `ComponentsServiceProvider` |
 | `withView()` | `view` | `ViewServiceProvider` + `TwigViewServiceProvider` **або** `PlatesViewServiceProvider` |
 | `withErrorHandling()` | `error-handling` | `ErrorHandlerWhoopsServiceProvider` |
 
@@ -64,26 +66,35 @@ new LoggerMonologServiceProvider(
 
 ---
 
-## `withTelemetry()` → `TelemetryServiceProvider` + `EventServiceProvider`
+## `withEvents()` → `EventServiceProvider`
 
 ```php
-new TelemetryServiceProvider(); // без params
-
 new EventServiceProvider(
     subscriberClasses: array = [], // list<class-string<ListenerSubscriber>>
 )
 ```
 
-`EventServiceProvider` додається лише якщо `enabled` і `subscribers` не порожній.
+`withEvents()` завжди реєструє dispatcher, навіть якщо subscribers порожні.
+
+| Param SP | Builder method |
+|----------|----------------|
+| `$subscriberClasses` | `->subscribers([...])` |
+
+---
+
+## `withTelemetry()` → `TelemetryServiceProvider`
+
+```php
+new TelemetryServiceProvider(); // без params
+```
 
 | Поведінка / wiring | Builder method |
 |--------------------|----------------|
 | увімкнути boot-логіку | `->enabled(bool)` |
 | `TelemetryLogHandler` + `LogHandlerRegistry` (requires logging) | `->logs(bool)` |
 | event name для log handler | `->eventName(string)` |
-| `$subscriberClasses` | `->subscribers([...])` |
 
-DB query events — лише `withDatabase()->withEmitQueryEvents()` (requires telemetry).
+DB query events — лише `withDatabase()->withEmitQueryEvents()` (requires events).
 
 ---
 
@@ -164,7 +175,7 @@ new DatabaseEloquentServiceProvider(
 | `$seeders` | `->seeders([...])` |
 | `$logEnabled`, `$logFilePath`, `$logMaxFiles` | `->withQueryLogging($path, $maxFiles = 7)` |
 | `$dataMaskerFactory` | `->withMasking()` (requires masking) |
-| `$emitQueryEvents` | `->withEmitQueryEvents()` (requires telemetry) |
+| `$emitQueryEvents` | `->withEmitQueryEvents()` (requires events) |
 
 ---
 
@@ -300,6 +311,21 @@ new ErrorHandlerWhoopsServiceProvider(
 
 ---
 
+## `withComponents()` → `ComponentsServiceProvider`
+
+```php
+$stack->withComponents()
+    ->classes([BlogComponent::class])
+    ->withDatabase() // seeders + migrations
+    ->withConsole()  // component commands
+    ->withHttp()     // component routes
+    ->withView();    // view paths/extensions/namespaces
+```
+
+Усі інтеграції opt-in. `classes()` отримує готовий список class-string; stack не читає Config.
+
+---
+
 ## Залежності capabilities (`require`)
 
 | Виклик | Requires |
@@ -307,16 +333,21 @@ new ErrorHandlerWhoopsServiceProvider(
 | `withLogging()->withMasking()` | `logging` → `masking` |
 | `withTelemetry()->logs(true)` | `telemetry` → `logging` |
 | `withDatabase()->withMasking()` | `database` → `masking` |
-| `withDatabase()->withEmitQueryEvents()` | `database` → `telemetry` |
+| `withDatabase()->withEmitQueryEvents()` | `database` → `events` |
 | `withValidation()->withMasking()` | `validation` → `masking` |
 | `withHttp()->withFormRequests()` | `http` → `validation` |
 | `withHttp()->withTypedRouteParameters()` | `http` → `casting` |
 | `withView()` | `view` → `http` (при реєстрації) |
+| `withComponents()->withDatabase()` | `components` → `database` |
+| `withComponents()->withConsole()` | `components` → `console` |
+| `withComponents()->withHttp()` | `components` → `http` |
+| `withComponents()->withView()` | `components` → `view` |
 | `withErrorHandling()->reportToLog()` | `error-handling` → `logging` |
 | `withErrorHandling()->renderHtmlErrorPage(...)` | `error-handling` → `view` |
 | `withErrorHandling()->renderJson()` | `error-handling` → `http` |
 
-Перевірка на `providers()`.
+Перевірка на `providers()`. Capability providers повертаються у стабільному
+топологічному порядку: dependencies завжди перед consumers незалежно від порядку `withX()`.
 
 ---
 
@@ -331,4 +362,4 @@ new ErrorHandlerWhoopsServiceProvider(
 
 ---
 
-*З `/var/www/concept-stack/src` — 2026-07-15.*
+*З `/var/www/concept-stack/src` — 2026-07-19.*
