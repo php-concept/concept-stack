@@ -4,7 +4,6 @@ namespace Concept\Stack\Bricks\Logging;
 
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
-use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Handler\RotatingFileHandler;
 use Monolog\Handler\StreamHandler;
@@ -21,14 +20,14 @@ final class LoggingBuilder
     /**
      * Default level for subsequent toRotatingFile() / toStderr() helpers.
      */
-    public function level(string $level): self
+    public function setLevel(string $level): self
     {
         $this->options->setLevel($level);
 
         return $this;
     }
 
-    public function channel(string $channel): self
+    public function setChannel(string $channel): self
     {
         $this->options->setChannel($channel);
 
@@ -57,9 +56,9 @@ final class LoggingBuilder
     }
 
     /**
-     * Escape hatch for any ready Monolog handler.
+     * Escape hatch: opt-in any ready Monolog handler (Syslog, Slack, …).
      */
-    public function toHandler(HandlerInterface $handler): self
+    public function withHandler(HandlerInterface $handler): self
     {
         $this->options->addHandler($handler);
 
@@ -68,7 +67,7 @@ final class LoggingBuilder
 
     /**
      * Opt-in log masking. Makes logging depend on the masking capability,
-     * which must be enabled via ConceptStack::withMasking().
+     * which must be enabled via ConceptStack::addMasking().
      */
     public function withMasking(): self
     {

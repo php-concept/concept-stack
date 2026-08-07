@@ -6,7 +6,7 @@ final class InvalidCapabilityOptionsException extends ConceptStackException
 {
     private const string ERR_MISSING = 'Capability "%s" requires option "%s" to be set.';
 
-    private const string ERR_MISSING_HANDLERS = 'Capability "%s" requires at least one handler (toRotatingFile, toStderr, toHandler).';
+    private const string ERR_MISSING_HANDLERS = 'Capability "%s" requires at least one handler (toRotatingFile, toStderr, withHandler).';
 
     private const string ERR_ALREADY_ENABLED = 'Capability "%s" is already enabled.';
     private const string ERR_CIRCULAR_DEPENDENCY = 'Circular capability dependency detected at "%s".';

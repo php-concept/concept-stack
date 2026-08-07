@@ -58,7 +58,7 @@ new LoggerMonologServiceProvider(
 
 | Param SP | Builder method |
 |----------|----------------|
-| `$handlers` | `->toRotatingFile($path, $maxFiles = 7, $level?)`, `->toStderr($level?)`, `->toHandler($handler)` |
+| `$handlers` | `->toRotatingFile($path, $maxFiles = 7, $level?)`, `->toStderr($level?)`, `->withHandler($handler)` |
 | `$channel` | `->setChannel($name)` |
 | `$dataMaskerFactory` | `->withMasking()` (requires `addMasking()`) → `OptionalDependency::factory(..., DataMaskerInterface)` |
 
