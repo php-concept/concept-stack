@@ -13,7 +13,7 @@ final class SessionBuilder
     /**
      * @param array<string, mixed> $options Native session options (cookie_*, use_strict_mode, …)
      */
-    public function options(array $options): self
+    public function setOptions(array $options): self
     {
         $this->options->setSessionOptions($options);
 
@@ -24,7 +24,7 @@ final class SessionBuilder
      * Explicit session handler. When omitted, NativeFileSessionHandler() with PHP defaults is used.
      * Stack does not resolve storage paths — pass a ready handler from app glue if needed.
      */
-    public function handler(SessionHandlerInterface $handler): self
+    public function setHandler(SessionHandlerInterface $handler): self
     {
         $this->options->setHandler($handler);
 

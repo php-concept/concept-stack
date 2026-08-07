@@ -17,7 +17,7 @@ final class DatabaseBuilder
      *
      * @param array<string, mixed> $connection
      */
-    public function connection(array $connection): self
+    public function setConnection(array $connection): self
     {
         $this->options->setConnection($connection);
 
@@ -27,14 +27,14 @@ final class DatabaseBuilder
     /**
      * @param list<string> $paths Absolute paths to migration directories
      */
-    public function migrations(array $paths): self
+    public function setMigrations(array $paths): self
     {
         $this->options->setMigrationPaths($paths);
 
         return $this;
     }
 
-    public function migrationsTable(string $table): self
+    public function setMigrationsTable(string $table): self
     {
         $this->options->setMigrationsTable($table);
 
@@ -44,7 +44,7 @@ final class DatabaseBuilder
     /**
      * @param list<class-string> $seeders
      */
-    public function seeders(array $seeders): self
+    public function setSeeders(array $seeders): self
     {
         $this->options->setSeeders($seeders);
 
@@ -64,7 +64,7 @@ final class DatabaseBuilder
     }
 
     /**
-     * Opt-in query log masking. Requires the masking capability via ConceptStack::withMasking().
+     * Opt-in query log masking. Requires the masking capability via ConceptStack::addMasking().
      */
     public function withMasking(): self
     {

@@ -16,7 +16,7 @@ final class ComponentsBuilder
     /**
      * @param list<class-string<ComponentInterface>> $componentClasses
      */
-    public function classes(array $componentClasses): self
+    public function setClasses(array $componentClasses): self
     {
         $this->options->setComponentClasses($componentClasses);
 

@@ -23,11 +23,15 @@ final class ViewOptions
 
     private string $twigViewsPath = '';
 
-    private string $twigCacheDir = '';
+    private ?string $twigCacheDir = null;
 
     private bool $twigDebug = false;
 
+    private ?string $twigDefaultExtension = null;
+
     private string $platesViewsPath = '';
+
+    private ?string $platesDefaultExtension = null;
 
     /**
      * @return array<string, string>
@@ -64,17 +68,17 @@ final class ViewOptions
     /**
      * @return array<string, string>
      */
-    public function routeNamespace(): array
+    public function routeNamespaces(): array
     {
         return $this->routeNamespace;
     }
 
     /**
-     * @param array<string, string> $routeNamespace
+     * @param array<string, string> $routeNamespaces
      */
-    public function setRouteNamespace(array $routeNamespace): void
+    public function setRouteNamespaces(array $routeNamespaces): void
     {
-        $this->routeNamespace = $routeNamespace;
+        $this->routeNamespace = $routeNamespaces;
     }
 
     public function engine(): ?string
@@ -97,12 +101,12 @@ final class ViewOptions
         $this->twigViewsPath = $twigViewsPath;
     }
 
-    public function twigCacheDir(): string
+    public function twigCacheDir(): ?string
     {
         return $this->twigCacheDir;
     }
 
-    public function setTwigCacheDir(string $twigCacheDir): void
+    public function setTwigCacheDir(?string $twigCacheDir): void
     {
         $this->twigCacheDir = $twigCacheDir;
     }
@@ -117,6 +121,16 @@ final class ViewOptions
         $this->twigDebug = $twigDebug;
     }
 
+    public function twigDefaultExtension(): ?string
+    {
+        return $this->twigDefaultExtension;
+    }
+
+    public function setTwigDefaultExtension(string $twigDefaultExtension): void
+    {
+        $this->twigDefaultExtension = $twigDefaultExtension;
+    }
+
     public function platesViewsPath(): string
     {
         return $this->platesViewsPath;
@@ -127,6 +141,16 @@ final class ViewOptions
         $this->platesViewsPath = $platesViewsPath;
     }
 
+    public function platesDefaultExtension(): ?string
+    {
+        return $this->platesDefaultExtension;
+    }
+
+    public function setPlatesDefaultExtension(string $platesDefaultExtension): void
+    {
+        $this->platesDefaultExtension = $platesDefaultExtension;
+    }
+
     public function assertValid(): void
     {
         if ($this->engine === null) {
@@ -134,11 +158,11 @@ final class ViewOptions
         }
 
         if ($this->engine === self::ENGINE_TWIG && $this->twigViewsPath === '') {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::VIEW, 'withTwig()->viewsPath');
+            throw InvalidCapabilityOptionsException::missingOption(Capability::VIEW, 'withTwig()->setViewsPath()');
         }
 
         if ($this->engine === self::ENGINE_PLATES && $this->platesViewsPath === '') {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::VIEW, 'withPlates()->viewsPath');
+            throw InvalidCapabilityOptionsException::missingOption(Capability::VIEW, 'withPlates()->setViewsPath()');
         }
     }
 }

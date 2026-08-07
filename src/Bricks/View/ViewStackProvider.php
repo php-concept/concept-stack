@@ -46,7 +46,7 @@ final class ViewStackProvider extends AbstractServiceProvider implements Bootabl
             ),
             paths: $this->options->paths(),
             extensions: $this->options->extensions(),
-            routeNamespace: $this->options->routeNamespace(),
+            routeNamespace: $this->options->routeNamespaces(),
         ));
 
         match ($this->options->engine()) {
@@ -54,9 +54,13 @@ final class ViewStackProvider extends AbstractServiceProvider implements Bootabl
                 viewsPath: $this->options->twigViewsPath(),
                 cacheDir: $this->options->twigCacheDir(),
                 debug: $this->options->twigDebug(),
+                defaultExtension: $this->options->twigDefaultExtension()
+                    ?? TwigViewServiceProvider::DEFAULT_EXTENSION,
             )),
             ViewOptions::ENGINE_PLATES => $container->addServiceProvider(new PlatesViewServiceProvider(
                 viewsPath: $this->options->platesViewsPath(),
+                defaultExtension: $this->options->platesDefaultExtension()
+                    ?? PlatesViewServiceProvider::DEFAULT_EXTENSION,
             )),
             default => throw new LogicException(sprintf(
                 self::ERR_UNKNOWN_ENGINE,

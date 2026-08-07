@@ -13,7 +13,7 @@ final class EventsBuilder
     /**
      * @param list<class-string<ListenerSubscriber>> $subscribers
      */
-    public function subscribers(array $subscribers): self
+    public function setSubscribers(array $subscribers): self
     {
         $this->options->setSubscribers($subscribers);
 

@@ -17,7 +17,7 @@ final class ViewBuilder
      *
      * @param array<string, string> $paths
      */
-    public function paths(array $paths): self
+    public function setPaths(array $paths): self
     {
         $this->options->setPaths($paths);
 
@@ -29,7 +29,7 @@ final class ViewBuilder
      *
      * @param list<class-string> $extensions
      */
-    public function extensions(array $extensions): self
+    public function setExtensions(array $extensions): self
     {
         $this->options->setExtensions($extensions);
 
@@ -37,11 +37,11 @@ final class ViewBuilder
     }
 
     /**
-     * @param array<string, string> $routeNamespace
+     * @param array<string, string> $routeNamespaces
      */
-    public function routeNamespace(array $routeNamespace): self
+    public function setRouteNamespaces(array $routeNamespaces): self
     {
-        $this->options->setRouteNamespace($routeNamespace);
+        $this->options->setRouteNamespaces($routeNamespaces);
 
         return $this;
     }

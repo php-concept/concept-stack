@@ -50,7 +50,7 @@ final class TelemetryOptions
         }
 
         if ($this->logs && $this->eventName === '') {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::TELEMETRY, 'eventName');
+            throw InvalidCapabilityOptionsException::missingOption(Capability::TELEMETRY, 'setEventName()');
         }
     }
 }

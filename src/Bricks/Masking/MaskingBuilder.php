@@ -13,7 +13,7 @@ final class MaskingBuilder
     /**
      * @param array<string, string> $patterns
      */
-    public function patterns(array $patterns): self
+    public function setPatterns(array $patterns): self
     {
         $this->options->setPatterns($patterns);
 
@@ -23,7 +23,7 @@ final class MaskingBuilder
     /**
      * @param list<string> $keyPatterns
      */
-    public function keyPatterns(array $keyPatterns): self
+    public function setKeyPatterns(array $keyPatterns): self
     {
         $this->options->setKeyPatterns($keyPatterns);
 
@@ -33,7 +33,7 @@ final class MaskingBuilder
     /**
      * @param list<class-string<DataMaskerRuleInterface>> $rules
      */
-    public function rules(array $rules): self
+    public function setRules(array $rules): self
     {
         $this->options->setRules($rules);
 

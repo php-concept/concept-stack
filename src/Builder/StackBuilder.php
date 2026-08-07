@@ -63,7 +63,7 @@ final class StackBuilder
         $this->capabilities = new CapabilityRegistry();
     }
 
-    public function withMasking(): MaskingBuilder
+    public function addMasking(): MaskingBuilder
     {
         $options = new MaskingOptions();
         $this->registerCapability(Capability::MASKING, new MaskingStackProvider($options));
@@ -71,7 +71,7 @@ final class StackBuilder
         return new MaskingBuilder($options);
     }
 
-    public function withLogging(): LoggingBuilder
+    public function addLogging(): LoggingBuilder
     {
         $options = new LoggingOptions();
         $this->registerCapability(
@@ -83,7 +83,7 @@ final class StackBuilder
         return new LoggingBuilder($this, $options);
     }
 
-    public function withEvents(): EventsBuilder
+    public function addEvents(): EventsBuilder
     {
         $options = new EventsOptions();
         $this->registerCapability(Capability::EVENTS, new EventsStackProvider($options));
@@ -91,7 +91,7 @@ final class StackBuilder
         return new EventsBuilder($options);
     }
 
-    public function withTelemetry(): TelemetryBuilder
+    public function addTelemetry(): TelemetryBuilder
     {
         $options = new TelemetryOptions();
         $this->registerCapability(
@@ -103,7 +103,7 @@ final class StackBuilder
         return new TelemetryBuilder($this, $options);
     }
 
-    public function withErrorHandling(): ErrorHandlingBuilder
+    public function addErrorHandling(): ErrorHandlingBuilder
     {
         $options = new ErrorHandlingOptions();
         $this->registerCapability(
@@ -115,7 +115,7 @@ final class StackBuilder
         return new ErrorHandlingBuilder($this, $options);
     }
 
-    public function withCasting(): CastingBuilder
+    public function addCasting(): CastingBuilder
     {
         $options = new CastingOptions();
         $this->registerCapability(Capability::CASTING, new CastingStackProvider($options));
@@ -123,7 +123,7 @@ final class StackBuilder
         return new CastingBuilder($options);
     }
 
-    public function withDatabase(): DatabaseBuilder
+    public function addDatabase(): DatabaseBuilder
     {
         $options = new DatabaseOptions();
         $this->registerCapability(
@@ -135,7 +135,7 @@ final class StackBuilder
         return new DatabaseBuilder($this, $options);
     }
 
-    public function withValidation(): ValidationBuilder
+    public function addValidation(): ValidationBuilder
     {
         $options = new ValidationOptions();
         $this->registerCapability(Capability::VALIDATION, new ValidationStackProvider($options));
@@ -143,7 +143,7 @@ final class StackBuilder
         return new ValidationBuilder($this, $options);
     }
 
-    public function withConsole(): ConsoleBuilder
+    public function addConsole(): ConsoleBuilder
     {
         $options = new ConsoleOptions();
         $this->registerCapability(Capability::CONSOLE, new ConsoleStackProvider($options));
@@ -151,7 +151,7 @@ final class StackBuilder
         return new ConsoleBuilder($options);
     }
 
-    public function withComponents(): ComponentsBuilder
+    public function addComponents(): ComponentsBuilder
     {
         $options = new ComponentsOptions();
         $this->registerCapability(Capability::COMPONENTS, new ComponentsStackProvider($options));
@@ -159,7 +159,7 @@ final class StackBuilder
         return new ComponentsBuilder($this, $options);
     }
 
-    public function withHttp(): HttpBuilder
+    public function addHttp(): HttpBuilder
     {
         $options = new HttpOptions();
         $this->registerCapability(
@@ -171,7 +171,7 @@ final class StackBuilder
         return new HttpBuilder($this, $options);
     }
 
-    public function withSession(): SessionBuilder
+    public function addSession(): SessionBuilder
     {
         $options = new SessionOptions();
         $this->registerCapability(Capability::SESSION, new SessionStackProvider($options));
@@ -179,7 +179,7 @@ final class StackBuilder
         return new SessionBuilder($options);
     }
 
-    public function withView(): ViewBuilder
+    public function addView(): ViewBuilder
     {
         $options = new ViewOptions();
         $this->registerCapability(

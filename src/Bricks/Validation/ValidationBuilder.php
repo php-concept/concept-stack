@@ -16,7 +16,7 @@ final class ValidationBuilder
     /**
      * @param array<string, class-string<RuleInterface>> $customRules
      */
-    public function rules(array $customRules): self
+    public function setRules(array $customRules): self
     {
         $this->options->setCustomRules($customRules);
 
@@ -24,38 +24,13 @@ final class ValidationBuilder
     }
 
     /**
-     * @param array<string, class-string<RuleInterface>> $customRules
+     * Opt-in validation result logging to a rotating file.
      */
-    public function customRules(array $customRules): self
+    public function withLogging(string $logFilePath, int $maxFiles = 7): self
     {
-        return $this->rules($customRules);
-    }
-
-    public function logFile(string $logFilePath): self
-    {
-        $this->options->setLogFilePath($logFilePath);
         $this->options->setLogEnabled(true);
-
-        return $this;
-    }
-
-    public function logFilePath(string $logFilePath): self
-    {
         $this->options->setLogFilePath($logFilePath);
-
-        return $this;
-    }
-
-    public function logEnabled(bool $logEnabled = true): self
-    {
-        $this->options->setLogEnabled($logEnabled);
-
-        return $this;
-    }
-
-    public function logMaxFiles(int $logMaxFiles): self
-    {
-        $this->options->setLogMaxFiles($logMaxFiles);
+        $this->options->setLogMaxFiles($maxFiles);
 
         return $this;
     }
@@ -63,7 +38,7 @@ final class ValidationBuilder
     /**
      * @param list<string> $globalExcept
      */
-    public function globalExcept(array $globalExcept): self
+    public function setGlobalExcept(array $globalExcept): self
     {
         $this->options->setGlobalExcept($globalExcept);
 
@@ -71,7 +46,7 @@ final class ValidationBuilder
     }
 
     /**
-     * Opt-in validation log masking. Requires ConceptStack::withMasking().
+     * Opt-in validation log masking. Requires ConceptStack::addMasking().
      */
     public function withMasking(): self
     {

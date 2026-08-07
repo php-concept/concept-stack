@@ -12,7 +12,7 @@ final class TelemetryBuilder
         private readonly TelemetryOptions $options,
     ) {}
 
-    public function enabled(bool $enabled = true): self
+    public function setEnabled(bool $enabled = true): self
     {
         $this->options->setEnabled($enabled);
 
@@ -21,9 +21,9 @@ final class TelemetryBuilder
 
     /**
      * Opt-in Monolog → TelemetryCollector bridge via LogHandlerRegistry.
-     * Requires the logging capability via ConceptStack::withLogging().
+     * Requires the logging capability via ConceptStack::addLogging().
      */
-    public function logs(bool $logs = true): self
+    public function setLogs(bool $logs = true): self
     {
         $this->options->setLogs($logs);
 
@@ -35,14 +35,13 @@ final class TelemetryBuilder
     }
 
     /**
-     * Event name used by TelemetryLogHandler when logs() is enabled.
+     * Event name used by TelemetryLogHandler when setLogs() is enabled.
      * Pass an application string — do not import Concept\App constants into stack.
      */
-    public function eventName(string $eventName): self
+    public function setEventName(string $eventName): self
     {
         $this->options->setEventName($eventName);
 
         return $this;
     }
-
 }

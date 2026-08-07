@@ -8,7 +8,7 @@ final class CastingBuilder
         private readonly CastingOptions $options,
     ) {}
 
-    public function cacheDir(string $cacheDirectory): self
+    public function setCacheDir(string $cacheDirectory): self
     {
         $this->options->setCacheDirectory($cacheDirectory);
 
@@ -18,14 +18,14 @@ final class CastingBuilder
     /**
      * @param list<class-string> $transformerClasses
      */
-    public function transformers(array $transformerClasses): self
+    public function setTransformers(array $transformerClasses): self
     {
         $this->options->setTransformerClasses($transformerClasses);
 
         return $this;
     }
 
-    public function debug(bool $debug = true): self
+    public function setDebug(bool $debug = true): self
     {
         $this->options->setDebug($debug);
 

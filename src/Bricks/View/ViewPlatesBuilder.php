@@ -11,9 +11,19 @@ final class ViewPlatesBuilder
     /**
      * Absolute path to the primary Plates templates root.
      */
-    public function viewsPath(string $viewsPath): self
+    public function setViewsPath(string $viewsPath): self
     {
         $this->options->setPlatesViewsPath($viewsPath);
+
+        return $this;
+    }
+
+    /**
+     * File suffix for Plates templates (default `.php`).
+     */
+    public function setDefaultExtension(string $defaultExtension): self
+    {
+        $this->options->setPlatesDefaultExtension($defaultExtension);
 
         return $this;
     }

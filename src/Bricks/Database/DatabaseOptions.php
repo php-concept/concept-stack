@@ -139,7 +139,7 @@ final class DatabaseOptions
     public function assertValid(): void
     {
         if ($this->connection === []) {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::DATABASE, 'connection');
+            throw InvalidCapabilityOptionsException::missingOption(Capability::DATABASE, 'setConnection()');
         }
     }
 }

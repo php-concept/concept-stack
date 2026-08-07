@@ -10,14 +10,14 @@ final class ConsoleBuilder
         private readonly ConsoleOptions $options,
     ) {}
 
-    public function name(string $appName): self
+    public function setName(string $appName): self
     {
         $this->options->setAppName($appName);
 
         return $this;
     }
 
-    public function version(string $appVersion): self
+    public function setVersion(string $appVersion): self
     {
         $this->options->setAppVersion($appVersion);
 
@@ -27,7 +27,7 @@ final class ConsoleBuilder
     /**
      * @param list<class-string<Command>> $commands
      */
-    public function commands(array $commands): self
+    public function setCommands(array $commands): self
     {
         $this->options->setCommands($commands);
 

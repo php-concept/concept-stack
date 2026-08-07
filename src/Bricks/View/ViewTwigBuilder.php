@@ -11,7 +11,7 @@ final class ViewTwigBuilder
     /**
      * Absolute path to the primary Twig templates root (FilesystemLoader).
      */
-    public function viewsPath(string $viewsPath): self
+    public function setViewsPath(string $viewsPath): self
     {
         $this->options->setTwigViewsPath($viewsPath);
 
@@ -19,18 +19,28 @@ final class ViewTwigBuilder
     }
 
     /**
-     * Absolute Twig cache directory. Empty + debug=false means Twig default behaviour.
+     * Absolute Twig cache directory. Omit (null default) → no filesystem cache.
      */
-    public function cacheDir(string $cacheDir): self
+    public function setCacheDir(string $cacheDir): self
     {
         $this->options->setTwigCacheDir($cacheDir);
 
         return $this;
     }
 
-    public function debug(bool $debug = true): self
+    public function setDebug(bool $debug = true): self
     {
         $this->options->setTwigDebug($debug);
+
+        return $this;
+    }
+
+    /**
+     * File suffix appended when the template name has none (default `.twig`).
+     */
+    public function setDefaultExtension(string $defaultExtension): self
+    {
+        $this->options->setTwigDefaultExtension($defaultExtension);
 
         return $this;
     }
