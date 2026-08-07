@@ -6,6 +6,7 @@ use Closure;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Stack\Capability\Capability;
 use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 final class HttpOptions
@@ -13,15 +14,15 @@ final class HttpOptions
     /** @var list<string> */
     private array $routes = [];
 
-    /** @var list<class-string<RouteInterceptorInterface>> */
+    /** @var list<RouteInterceptorInterface|Closure(ContainerInterface): mixed> */
     private array $interceptors = [];
 
     private bool $typedRouteParameters = false;
 
     private bool $formRequests = false;
 
-    /** @var MiddlewareInterface|class-string<MiddlewareInterface>|Closure|null */
-    private MiddlewareInterface|Closure|string|null $notFoundMiddleware = null;
+    /** @var MiddlewareInterface|Closure(ContainerInterface): mixed|null */
+    private MiddlewareInterface|Closure|null $notFoundMiddleware = null;
 
     /**
      * @return list<string>
@@ -40,7 +41,7 @@ final class HttpOptions
     }
 
     /**
-     * @return list<class-string<RouteInterceptorInterface>>
+     * @return list<RouteInterceptorInterface|Closure(ContainerInterface): mixed>
      */
     public function interceptors(): array
     {
@@ -48,7 +49,7 @@ final class HttpOptions
     }
 
     /**
-     * @param list<class-string<RouteInterceptorInterface>> $interceptors
+     * @param list<RouteInterceptorInterface|Closure(ContainerInterface): mixed> $interceptors
      */
     public function setInterceptors(array $interceptors): void
     {
@@ -76,17 +77,17 @@ final class HttpOptions
     }
 
     /**
-     * @return MiddlewareInterface|class-string<MiddlewareInterface>|Closure|null
+     * @return MiddlewareInterface|Closure(ContainerInterface): mixed|null
      */
-    public function notFoundMiddleware(): MiddlewareInterface|Closure|string|null
+    public function notFoundMiddleware(): MiddlewareInterface|Closure|null
     {
         return $this->notFoundMiddleware;
     }
 
     /**
-     * @param MiddlewareInterface|class-string<MiddlewareInterface>|Closure|null $notFoundMiddleware
+     * @param MiddlewareInterface|Closure(ContainerInterface): mixed|null $notFoundMiddleware
      */
-    public function setNotFoundMiddleware(MiddlewareInterface|Closure|string|null $notFoundMiddleware): void
+    public function setNotFoundMiddleware(MiddlewareInterface|Closure|null $notFoundMiddleware): void
     {
         $this->notFoundMiddleware = $notFoundMiddleware;
     }
@@ -94,7 +95,7 @@ final class HttpOptions
     public function assertValid(): void
     {
         if ($this->routes === []) {
-            throw InvalidCapabilityOptionsException::missingOption(Capability::HTTP, 'routes');
+            throw InvalidCapabilityOptionsException::missingOption(Capability::HTTP, 'setRoutes()');
         }
     }
 }

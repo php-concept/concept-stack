@@ -6,6 +6,7 @@ use Closure;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 final class HttpBuilder
@@ -18,7 +19,7 @@ final class HttpBuilder
     /**
      * @param list<string> $routes Absolute paths to route files
      */
-    public function routes(array $routes): self
+    public function setRoutes(array $routes): self
     {
         $this->options->setRoutes($routes);
 
@@ -26,9 +27,9 @@ final class HttpBuilder
     }
 
     /**
-     * @param list<class-string<RouteInterceptorInterface>> $interceptors
+     * @param list<RouteInterceptorInterface|Closure(ContainerInterface): mixed> $interceptors
      */
-    public function interceptors(array $interceptors): self
+    public function setInterceptors(array $interceptors): self
     {
         $this->options->setInterceptors($interceptors);
 
@@ -37,7 +38,7 @@ final class HttpBuilder
 
     /**
      * Opt-in form request resolving. Makes HTTP depend on the validation
-     * capability, which must be enabled via ConceptStack::withValidation().
+     * capability, which must be enabled via ConceptStack::addValidation().
      */
     public function withFormRequests(): self
     {
@@ -49,7 +50,7 @@ final class HttpBuilder
 
     /**
      * Opt-in typed route parameters (casting). Makes HTTP depend on the casting
-     * capability, which must be enabled via ConceptStack::withCasting().
+     * capability, which must be enabled via ConceptStack::addCasting().
      */
     public function withTypedRouteParameters(): self
     {
@@ -63,9 +64,11 @@ final class HttpBuilder
      * Maps to HttpKernelServiceProvider::$notFoundMiddleware. Unset (null) means the
      * core default behaviour (League NotFoundException).
      *
-     * @param MiddlewareInterface|class-string<MiddlewareInterface>|Closure|null $middleware
+     * Pass a middleware instance or a factory Closure; class-strings are not resolved.
+     *
+     * @param MiddlewareInterface|Closure(ContainerInterface): mixed|null $middleware
      */
-    public function notFound(MiddlewareInterface|Closure|string|null $middleware): self
+    public function setNotFoundMiddleware(MiddlewareInterface|Closure|null $middleware): self
     {
         $this->options->setNotFoundMiddleware($middleware);
 

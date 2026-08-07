@@ -206,7 +206,7 @@ CSRF middleware — у routes, не в stack.
 new HttpKernelServiceProvider(
     routePaths: array,                          // absolute paths
     resolvers: array = [],                      // list<ArgumentResolverInterface>
-    interceptors: array = [],
+    interceptors: array = [],                   // instances | Closure factories (не class-string)
     notFoundMiddleware: MiddlewareInterface|Closure|null = null,
 )
 
@@ -216,8 +216,8 @@ new HttpServiceProvider(); // без params
 | Param / wiring | Builder method |
 |----------------|----------------|
 | `$routePaths` | `->setRoutes([...])` |
-| `$interceptors` | `->setInterceptors([...])` |
-| `$notFoundMiddleware` | `->setNotFoundMiddleware(...)` |
+| `$interceptors` | `->setInterceptors([...])` — instances або `Closure(ContainerInterface): RouteInterceptorInterface` (не class-string) |
+| `$notFoundMiddleware` | `->setNotFoundMiddleware(...)` — instance або `Closure(ContainerInterface): MiddlewareInterface` (не class-string) |
 | `$resolvers` | збирає stack (див. нижче) |
 | FormRequest resolver | `->withFormRequests()` (requires validation) |
 | Typed route resolver | `->withTypedRouteParameters()` (requires casting) |
