@@ -10,25 +10,25 @@ Entry: `ConceptStack::create(): StackBuilder` → `providers()`.
 
 | Stack | Capability | ServiceProvider(s) |
 |-------|------------|-------------------|
-| `withMasking()` | `masking` | `DataMaskerServiceProvider` |
-| `withLogging()` | `logging` | `LoggerMonologServiceProvider` |
-| `withEvents()` | `events` | `EventServiceProvider` |
-| `withTelemetry()` | `telemetry` | `TelemetryServiceProvider` |
-| `withCasting()` | `casting` | `CastingServiceProvider` |
-| `withValidation()` | `validation` | `ValidationServiceProvider` + `FormRequestServiceProvider` |
-| `withDatabase()` | `database` | `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider` |
-| `withSession()` | `session` | `SessionServiceProvider` (+ `CsrfServiceProvider` якщо `withCsrf()`) |
-| `withHttp()` | `http` | **core** `HttpKernelServiceProvider` + `HttpServiceProvider` |
-| `withConsole()` | `console` | `ConsoleSymfonyServiceProvider` |
-| `withComponents()` | `components` | `ComponentsServiceProvider` |
-| `withView()` | `view` | `ViewServiceProvider` + `TwigViewServiceProvider` **або** `PlatesViewServiceProvider` |
-| `withErrorHandling()` | `error-handling` | `ErrorHandlerWhoopsServiceProvider` |
+| `addMasking()` | `masking` | `DataMaskerServiceProvider` |
+| `addLogging()` | `logging` | `LoggerMonologServiceProvider` |
+| `addEvents()` | `events` | `EventServiceProvider` |
+| `addTelemetry()` | `telemetry` | `TelemetryServiceProvider` |
+| `addCasting()` | `casting` | `CastingServiceProvider` |
+| `addValidation()` | `validation` | `ValidationServiceProvider` + `FormRequestServiceProvider` |
+| `addDatabase()` | `database` | `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider` |
+| `addSession()` | `session` | `SessionServiceProvider` (+ `CsrfServiceProvider` якщо `withCsrf()`) |
+| `addHttp()` | `http` | **core** `HttpKernelServiceProvider` + `HttpServiceProvider` |
+| `addConsole()` | `console` | `ConsoleSymfonyServiceProvider` |
+| `addComponents()` | `components` | `ComponentsServiceProvider` |
+| `addView()` | `view` | `ViewServiceProvider` + `TwigViewServiceProvider` **або** `PlatesViewServiceProvider` |
+| `addErrorHandling()` | `error-handling` | `ErrorHandlerWhoopsServiceProvider` |
 
 `HttpKernelServiceProvider` — `Concept\Core` (не extension).
 
 ---
 
-## `withMasking()` → `DataMaskerServiceProvider`
+## `addMasking()` → `DataMaskerServiceProvider`
 
 ```php
 new DataMaskerServiceProvider(
@@ -46,7 +46,7 @@ new DataMaskerServiceProvider(
 
 ---
 
-## `withLogging()` → `LoggerMonologServiceProvider`
+## `addLogging()` → `LoggerMonologServiceProvider`
 
 ```php
 new LoggerMonologServiceProvider(
@@ -59,14 +59,14 @@ new LoggerMonologServiceProvider(
 | Param SP | Builder method |
 |----------|----------------|
 | `$handlers` | `->toRotatingFile($path, $maxFiles = 7, $level?)`, `->toStderr($level?)`, `->toHandler($handler)` |
-| `$channel` | `->channel($name)` |
-| `$dataMaskerFactory` | `->withMasking()` (requires `withMasking()`) → `OptionalDependency::factory(..., DataMaskerInterface)` |
+| `$channel` | `->setChannel($name)` |
+| `$dataMaskerFactory` | `->withMasking()` (requires `addMasking()`) → `OptionalDependency::factory(..., DataMaskerInterface)` |
 
-`->level($name)` — лише default для `toRotatingFile` / `toStderr`, у SP не передається.
+`->setLevel($name)` — лише default для `toRotatingFile` / `toStderr`, у SP не передається.
 
 ---
 
-## `withEvents()` → `EventServiceProvider`
+## `addEvents()` → `EventServiceProvider`
 
 ```php
 new EventServiceProvider(
@@ -74,7 +74,7 @@ new EventServiceProvider(
 )
 ```
 
-`withEvents()` завжди реєструє dispatcher, навіть якщо subscribers порожні.
+`addEvents()` завжди реєструє dispatcher, навіть якщо subscribers порожні.
 
 | Param SP | Builder method |
 |----------|----------------|
@@ -82,7 +82,7 @@ new EventServiceProvider(
 
 ---
 
-## `withTelemetry()` → `TelemetryServiceProvider`
+## `addTelemetry()` → `TelemetryServiceProvider`
 
 ```php
 new TelemetryServiceProvider(); // без params
@@ -94,11 +94,11 @@ new TelemetryServiceProvider(); // без params
 | `TelemetryLogHandler` + `LogHandlerRegistry` (requires logging) | `->logs(bool)` |
 | event name для log handler | `->eventName(string)` |
 
-DB query events — лише `withDatabase()->withEmitQueryEvents()` (requires events).
+DB query events — лише `addDatabase()->withEmitQueryEvents()` (requires events).
 
 ---
 
-## `withCasting()` → `CastingServiceProvider`
+## `addCasting()` → `CastingServiceProvider`
 
 ```php
 new CastingServiceProvider(
@@ -116,7 +116,7 @@ new CastingServiceProvider(
 
 ---
 
-## `withValidation()` → `ValidationServiceProvider` + `FormRequestServiceProvider`
+## `addValidation()` → `ValidationServiceProvider` + `FormRequestServiceProvider`
 
 ```php
 new ValidationServiceProvider(
@@ -137,19 +137,17 @@ new FormRequestServiceProvider(
 
 | Param SP | Builder method / stack wiring |
 |----------|-------------------------------|
-| `$customRules` | `->rules([...])` / `->customRules([...])` |
-| `$logEnabled` | `->logEnabled(bool)` або `->logFile($path)` (вмикає log) |
-| `$logFilePath` | `->logFile($path)` / `->logFilePath($path)` |
-| `$logMaxFiles` | `->logMaxFiles(int)` |
+| `$customRules` | `->setRules([...])` |
+| `$logEnabled` / `$logFilePath` / `$logMaxFiles` | `->withLogging($path, $maxFiles = 7)` |
 | `$dataMaskerFactory` | завжди `OptionalDependency::factory(..., DataMaskerInterface)`; `->withMasking()` лише `require(validation, masking)` |
 | `$validatorFactory` | завжди lazy `ValidatorInterface` з container |
-| `$globalExcept` | `->globalExcept([...])` |
+| `$globalExcept` | `->setGlobalExcept([...])` |
 | `$casterFactory` | завжди optional `CasterInterface` |
 | `$validationLoggerFactory` | завжди optional `ValidationLogger` |
 
 ---
 
-## `withDatabase()` → `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider`
+## `addDatabase()` → `PaginationConfiguratorServiceProvider` + `DatabaseEloquentServiceProvider`
 
 ```php
 new PaginationConfiguratorServiceProvider(); // без params
@@ -169,17 +167,17 @@ new DatabaseEloquentServiceProvider(
 
 | Param SP | Builder method |
 |----------|----------------|
-| `$connection` | `->connection([...])` |
-| `$migrationPaths` | `->migrations([...])` |
-| `$migrationsTable` | `->migrationsTable($name)` |
-| `$seeders` | `->seeders([...])` |
+| `$connection` | `->setConnection([...])` |
+| `$migrationPaths` | `->setMigrations([...])` |
+| `$migrationsTable` | `->setMigrationsTable($name)` |
+| `$seeders` | `->setSeeders([...])` |
 | `$logEnabled`, `$logFilePath`, `$logMaxFiles` | `->withQueryLogging($path, $maxFiles = 7)` |
 | `$dataMaskerFactory` | `->withMasking()` (requires masking) |
 | `$emitQueryEvents` | `->withEmitQueryEvents()` (requires events) |
 
 ---
 
-## `withSession()` → `SessionServiceProvider` + opt-in `CsrfServiceProvider`
+## `addSession()` → `SessionServiceProvider` + opt-in `CsrfServiceProvider`
 
 ```php
 new SessionServiceProvider(
@@ -202,7 +200,7 @@ CSRF middleware — у routes, не в stack.
 
 ---
 
-## `withHttp()` → `HttpKernelServiceProvider` (core) + `HttpServiceProvider`
+## `addHttp()` → `HttpKernelServiceProvider` (core) + `HttpServiceProvider`
 
 ```php
 new HttpKernelServiceProvider(
@@ -217,9 +215,9 @@ new HttpServiceProvider(); // без params
 
 | Param / wiring | Builder method |
 |----------------|----------------|
-| `$routePaths` | `->routes([...])` |
-| `$interceptors` | `->interceptors([...])` |
-| `$notFoundMiddleware` | `->notFound(...)` |
+| `$routePaths` | `->setRoutes([...])` |
+| `$interceptors` | `->setInterceptors([...])` |
+| `$notFoundMiddleware` | `->setNotFoundMiddleware(...)` |
 | `$resolvers` | збирає stack (див. нижче) |
 | FormRequest resolver | `->withFormRequests()` (requires validation) |
 | Typed route resolver | `->withTypedRouteParameters()` (requires casting) |
@@ -233,7 +231,7 @@ new HttpServiceProvider(); // без params
 
 ---
 
-## `withConsole()` → `ConsoleSymfonyServiceProvider`
+## `addConsole()` → `ConsoleSymfonyServiceProvider`
 
 ```php
 new ConsoleSymfonyServiceProvider(
@@ -245,15 +243,15 @@ new ConsoleSymfonyServiceProvider(
 
 | Param SP | Builder method |
 |----------|----------------|
-| `$appName` | `->name($name)` |
-| `$appVersion` | `->version($version)` |
-| `$commands` | `->commands([...])` |
+| `$appName` | `->setName($name)` |
+| `$appVersion` | `->setVersion($version)` |
+| `$commands` | `->setCommands([...])` |
 
-DB/View CLI commands **не** додаються автоматично — передавай у `commands([...])`.
+DB/View CLI commands **не** додаються автоматично — передавай у `setCommands([...])`.
 
 ---
 
-## `withView()` → `ViewServiceProvider` + engine (requires `http`)
+## `addView()` → `ViewServiceProvider` + engine (requires `http`)
 
 ```php
 new ViewServiceProvider(
@@ -267,12 +265,14 @@ new ViewServiceProvider(
 
 new TwigViewServiceProvider(
     viewsPath: string,
-    cacheDir: string = '',
+    cacheDir: ?string = null,   // null → no filesystem cache
     debug: bool = false,
+    defaultExtension: string = '.twig',
 )
 
 new PlatesViewServiceProvider(
     viewsPath: string,
+    defaultExtension: string = '.php',
 )
 ```
 
@@ -280,16 +280,16 @@ XOR: лише один engine — `withTwig()` **або** `withPlates()`.
 
 | Param SP | Builder method |
 |----------|----------------|
-| `$paths` | `->paths([...])` |
-| `$extensions` | `->extensions([...])` |
-| `$routeNamespace` | `->routeNamespace([...])` |
+| `$paths` | `->setPaths([...])` |
+| `$extensions` | `->setExtensions([...])` |
+| `$routeNamespace` | `->setRouteNamespaces([...])` |
 | factories Response/View/RequestContext | завжди з container |
-| Twig `$viewsPath` / `$cacheDir` / `$debug` | `->withTwig()->viewsPath()->cacheDir()->debug()` |
-| Plates `$viewsPath` | `->withPlates()->viewsPath()` |
+| Twig `$viewsPath` / `$cacheDir` / `$debug` / `$defaultExtension` | `->withTwig()->setViewsPath()->setCacheDir()->setDebug()->setDefaultExtension()` |
+| Plates `$viewsPath` / `$defaultExtension` | `->withPlates()->setViewsPath()->setDefaultExtension()` |
 
 ---
 
-## `withErrorHandling()` → `ErrorHandlerWhoopsServiceProvider`
+## `addErrorHandling()` → `ErrorHandlerWhoopsServiceProvider`
 
 ```php
 new ErrorHandlerWhoopsServiceProvider(
@@ -303,26 +303,26 @@ new ErrorHandlerWhoopsServiceProvider(
 
 | Param SP | Builder method |
 |----------|----------------|
-| `$exceptionReporterFactory` | `->reportToLog()` / `->reporter(...)` / `->exceptionReporter(fn)` |
-| `$httpErrorRendererFactory` | `->renderHtmlErrorPage($path = '')` / `->renderJson()` / `->renderer(...)` |
-| `$debugHttpHandlerFactory` | stack: `debug(true)` + `->showDebugExceptionPage()` + `!expectsJson` → PrettyPage або null |
+| `$exceptionReporterFactory` | `->setLogReporting(logger: true, phpErrorLog: true)` / `->setReporter(...)` |
+| `$httpErrorRendererFactory` | `->withViewRenderer($path = '')` / `->withJsonRenderer()` / `->setRenderer(...)` |
+| `$debugHttpHandlerFactory` | stack: `->setDebug(true, new PrettyPageHandler())` + `!expectsJson` → handler або null |
 
-Один debug closure замість `debug` + `debugHttpHandlerFactory` + `useDebugHttpHandler` — уся умова в stack.
+Три осі builder: `setDebug` / `setLogReporting`+`setReporter` / `set*Renderer`.
 
 ---
 
-## `withComponents()` → `ComponentsServiceProvider`
+## `addComponents()` → `ComponentsServiceProvider`
 
 ```php
-$stack->withComponents()
-    ->classes([BlogComponent::class])
+$stack->addComponents()
+    ->setClasses([BlogComponent::class])
     ->withDatabase() // seeders + migrations
     ->withConsole()  // component commands
     ->withHttp()     // component routes
     ->withView();    // view paths/extensions/namespaces
 ```
 
-Усі інтеграції opt-in. `classes()` отримує готовий список class-string; stack не читає Config.
+Усі інтеграції opt-in. `setClasses()` отримує готовий список class-string; stack не читає Config.
 
 ---
 
@@ -330,24 +330,24 @@ $stack->withComponents()
 
 | Виклик | Requires |
 |--------|----------|
-| `withLogging()->withMasking()` | `logging` → `masking` |
-| `withTelemetry()->logs(true)` | `telemetry` → `logging` |
-| `withDatabase()->withMasking()` | `database` → `masking` |
-| `withDatabase()->withEmitQueryEvents()` | `database` → `events` |
-| `withValidation()->withMasking()` | `validation` → `masking` |
-| `withHttp()->withFormRequests()` | `http` → `validation` |
-| `withHttp()->withTypedRouteParameters()` | `http` → `casting` |
-| `withView()` | `view` → `http` (при реєстрації) |
-| `withComponents()->withDatabase()` | `components` → `database` |
-| `withComponents()->withConsole()` | `components` → `console` |
-| `withComponents()->withHttp()` | `components` → `http` |
-| `withComponents()->withView()` | `components` → `view` |
-| `withErrorHandling()->reportToLog()` | `error-handling` → `logging` |
-| `withErrorHandling()->renderHtmlErrorPage(...)` | `error-handling` → `view` |
-| `withErrorHandling()->renderJson()` | `error-handling` → `http` |
+| `addLogging()->withMasking()` | `logging` → `masking` |
+| `addTelemetry()->setLogs(true)` | `telemetry` → `logging` |
+| `addDatabase()->withMasking()` | `database` → `masking` |
+| `addDatabase()->withEmitQueryEvents()` | `database` → `events` |
+| `addValidation()->withMasking()` | `validation` → `masking` |
+| `addHttp()->withFormRequests()` | `http` → `validation` |
+| `addHttp()->withTypedRouteParameters()` | `http` → `casting` |
+| `addView()` | `view` → `http` (при реєстрації) |
+| `addComponents()->withDatabase()` | `components` → `database` |
+| `addComponents()->withConsole()` | `components` → `console` |
+| `addComponents()->withHttp()` | `components` → `http` |
+| `addComponents()->withView()` | `components` → `view` |
+| `addErrorHandling()->setLogReporting(logger: true)` | `error-handling` → `logging` |
+| `addErrorHandling()->withViewRenderer(...)` | `error-handling` → `view` |
+| `addErrorHandling()->withJsonRenderer()` | `error-handling` → `http` |
 
 Перевірка на `providers()`. Capability providers повертаються у стабільному
-топологічному порядку: dependencies завжди перед consumers незалежно від порядку `withX()`.
+топологічному порядку: dependencies завжди перед consumers незалежно від порядку `addX()`.
 
 ---
 

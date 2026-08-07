@@ -7,6 +7,7 @@ use Concept\Core\Container\ContainerDependency;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\ExceptionReporterInterface;
 use Concept\Extensions\ErrorHandlerWhoops\Contracts\HttpErrorRendererInterface;
 use Concept\Stack\Bricks\ErrorHandling\Reporting\LoggerExceptionReporter;
+use Concept\Stack\Bricks\ErrorHandling\Reporting\PhpErrorLogReporter;
 use Concept\Stack\Bricks\ErrorHandling\Rendering\JsonHttpErrorRenderer;
 use Concept\Stack\Bricks\ErrorHandling\Rendering\ViewHttpErrorRenderer;
 use Concept\Stack\Builder\StackBuilder;
@@ -19,43 +20,56 @@ use Concept\Extensions\View\Contracts\ViewResponseFactoryInterface;
 use Concept\Extensions\View\Support\ViewRouteNamespaceResolver;
 use League\Container\DefinitionContainerInterface;
 use Whoops\Handler\HandlerInterface;
-use Whoops\Handler\PrettyPageHandler;
 
 final class ErrorHandlingBuilder
 {
     private const string ERR_RENDERER_ALREADY_SET = 'Capability "error-handling" renderer is already set.';
+    private const string ERR_REPORT_CHANNELS_EMPTY = 'Capability "error-handling" setLogReporting() requires at least one channel: logger or phpErrorLog.';
 
     public function __construct(
         private readonly StackBuilder $parent,
         private readonly ErrorHandlingOptions $options,
     ) {}
 
-    public function debug(bool $debug = true): self
+    /**
+     * Debug display. Optional Whoops handler for non-JSON HTTP (e.g. new PrettyPageHandler()).
+     * Handler is unused when $debug is false. JSON requests still use the safe renderer.
+     *
+     * @param HandlerInterface|(Closure(): HandlerInterface)|null $handler
+     */
+    public function setDebug(bool $debug = true, HandlerInterface|Closure|null $handler = null): self
     {
         $this->options->setDebug($debug);
 
-        return $this;
-    }
-
-    /**
-     * Whoops exception page for debug web requests (non-JSON). Used only when debug(true).
-     */
-    public function showDebugExceptionPage(): self
-    {
-        $this->options->setDebugHttpHandler(static fn(): PrettyPageHandler => new PrettyPageHandler());
+        if ($handler !== null) {
+            $this->options->setDebugHttpHandler($handler);
+        }
 
         return $this;
     }
 
     /**
-     * Stack recipe: LoggerExceptionReporter. Requires withLogging().
+     * Report recipe: choose log channels (defaults: both).
+     * logger → LoggerInterface (requires addLogging()); phpErrorLog → PHP error_log.
      */
-    public function reportToLog(): self
+    public function setLogReporting(bool $logger = true, bool $phpErrorLog = true): self
     {
-        $this->parent->require(Capability::ERROR_HANDLING, Capability::LOGGING);
-        $this->options->setReporter(static function(DefinitionContainerInterface $container): ExceptionReporterInterface {
+        if (!$logger && !$phpErrorLog) {
+            throw new InvalidCapabilityOptionsException(self::ERR_REPORT_CHANNELS_EMPTY);
+        }
+
+        if ($logger) {
+            $this->parent->require(Capability::ERROR_HANDLING, Capability::LOGGING);
+        }
+
+        $this->options->setReporter(static function(DefinitionContainerInterface $container) use ($logger, $phpErrorLog): ExceptionReporterInterface {
+            if (!$logger) {
+                return new PhpErrorLogReporter();
+            }
+
             return new LoggerExceptionReporter(
                 logger: ContainerDependency::get($container, LoggerInterface::class),
+                phpErrorLogReporter: $phpErrorLog ? new PhpErrorLogReporter() : null,
             );
         });
 
@@ -63,10 +77,23 @@ final class ErrorHandlingBuilder
     }
 
     /**
-     * Stack recipe: ViewHttpErrorRenderer (@ns/errors/{code} + PHP fallback; JSON by Accept).
-     * Requires withView(). Optional $fallbackPath — absolute dir with {code}.php; empty skips PHP files.
+     * Report escape hatch: custom ExceptionReporterInterface or factory.
+     *
+     * @param ExceptionReporterInterface|Closure(DefinitionContainerInterface): ExceptionReporterInterface $reporter
      */
-    public function renderHtmlErrorPage(string $fallbackPath = ''): self
+    public function setReporter(ExceptionReporterInterface|Closure $reporter): self
+    {
+        $this->options->setReporter($reporter);
+
+        return $this;
+    }
+
+    /**
+     * Render recipe: ViewHttpErrorRenderer (@ns/errors/{code} + PHP fallback; JSON by Accept).
+     * Requires addView(). Optional $fallbackPath — absolute dir with {code}.php; empty skips PHP files.
+     * XOR with withJsonRenderer().
+     */
+    public function withViewRenderer(string $fallbackPath = ''): self
     {
         $this->assertRendererUnset();
         $this->parent->require(Capability::ERROR_HANDLING, Capability::VIEW);
@@ -85,9 +112,9 @@ final class ErrorHandlingBuilder
     }
 
     /**
-     * Stack recipe: JsonHttpErrorRenderer (API without view). Requires withHttp(). XOR with renderHtmlErrorPage().
+     * Render recipe: JsonHttpErrorRenderer (API without view). Requires addHttp(). XOR with withViewRenderer().
      */
-    public function renderJson(): self
+    public function withJsonRenderer(): self
     {
         $this->assertRendererUnset();
         $this->parent->require(Capability::ERROR_HANDLING, Capability::HTTP);
@@ -101,51 +128,13 @@ final class ErrorHandlingBuilder
     }
 
     /**
-     * @param Closure(DefinitionContainerInterface): ExceptionReporterInterface $factory
-     */
-    public function exceptionReporter(Closure $factory): self
-    {
-        $this->options->setReporter($factory);
-
-        return $this;
-    }
-
-    /**
-     * @param Closure(DefinitionContainerInterface): HttpErrorRendererInterface $factory
-     */
-    public function httpErrorRenderer(Closure $factory): self
-    {
-        $this->options->setRenderer($factory);
-
-        return $this;
-    }
-
-    /**
-     * @param ExceptionReporterInterface|Closure(DefinitionContainerInterface): ExceptionReporterInterface $reporter
-     */
-    public function reporter(ExceptionReporterInterface|Closure $reporter): self
-    {
-        $this->options->setReporter($reporter);
-
-        return $this;
-    }
-
-    /**
+     * Render escape hatch: custom HttpErrorRendererInterface or factory.
+     *
      * @param HttpErrorRendererInterface|Closure(DefinitionContainerInterface): HttpErrorRendererInterface $renderer
      */
-    public function renderer(HttpErrorRendererInterface|Closure $renderer): self
+    public function setRenderer(HttpErrorRendererInterface|Closure $renderer): self
     {
         $this->options->setRenderer($renderer);
-
-        return $this;
-    }
-
-    /**
-     * @param HandlerInterface|Closure(): HandlerInterface $handler
-     */
-    public function debugHttpHandler(HandlerInterface|Closure $handler): self
-    {
-        $this->options->setDebugHttpHandler($handler);
 
         return $this;
     }

@@ -56,7 +56,7 @@ final class ErrorHandlingStackProvider extends AbstractServiceProvider implement
 
         throw InvalidCapabilityOptionsException::missingOption(
             Capability::ERROR_HANDLING,
-            'reportToLog()/reporter()',
+            'setLogReporting()/setReporter()',
         );
     }
 
@@ -74,7 +74,7 @@ final class ErrorHandlingStackProvider extends AbstractServiceProvider implement
 
         throw InvalidCapabilityOptionsException::missingOption(
             Capability::ERROR_HANDLING,
-            'renderHtmlErrorPage()/renderJson()/renderer()',
+            'withViewRenderer()/withJsonRenderer()/setRenderer()',
         );
     }
 

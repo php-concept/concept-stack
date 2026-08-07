@@ -96,14 +96,14 @@ final class ErrorHandlingOptions
         if ($this->reporter === null) {
             throw InvalidCapabilityOptionsException::missingOption(
                 Capability::ERROR_HANDLING,
-                'reportToLog()/reporter()',
+                'setLogReporting()/setReporter()',
             );
         }
 
         if ($this->renderer === null) {
             throw InvalidCapabilityOptionsException::missingOption(
                 Capability::ERROR_HANDLING,
-                'renderHtmlErrorPage()/renderJson()/renderer()',
+                'withViewRenderer()/withJsonRenderer()/setRenderer()',
             );
         }
     }
