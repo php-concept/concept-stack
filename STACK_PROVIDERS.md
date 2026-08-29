@@ -182,7 +182,7 @@ new DatabaseEloquentServiceProvider(
 ```php
 new SessionServiceProvider(
     sessionOptions: array,             // array<string, mixed>
-    handler: SessionHandlerInterface,
+    handlerFactory: ?Closure,         // Closure(): SessionHandlerInterface
 )
 
 new CsrfServiceProvider(
@@ -192,8 +192,8 @@ new CsrfServiceProvider(
 
 | Param SP | Builder method |
 |----------|----------------|
-| `$sessionOptions` | `->options([...])` |
-| `$handler` | `->handler($handler)`; якщо немає — `NativeFileSessionHandler()` |
+| `$sessionOptions` | `->setOptions([...])` |
+| `$handlerFactory` | `->setHandlerFactory(fn() => ...)`; якщо немає — `NativeFileSessionHandler()` |
 | CSRF SP | `->withCsrf()` → `sessionFactory` з container |
 
 CSRF middleware — у routes, не в stack.

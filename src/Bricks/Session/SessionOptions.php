@@ -2,6 +2,7 @@
 
 namespace Concept\Stack\Bricks\Session;
 
+use Closure;
 use SessionHandlerInterface;
 
 final class SessionOptions
@@ -9,7 +10,8 @@ final class SessionOptions
     /** @var array<string, mixed> */
     private array $sessionOptions = [];
 
-    private ?SessionHandlerInterface $handler = null;
+    /** @var Closure(): SessionHandlerInterface|null */
+    private ?Closure $handlerFactory = null;
 
     private bool $csrf = false;
 
@@ -29,14 +31,20 @@ final class SessionOptions
         $this->sessionOptions = $sessionOptions;
     }
 
-    public function handler(): ?SessionHandlerInterface
+    /**
+     * @return Closure(): SessionHandlerInterface|null
+     */
+    public function handlerFactory(): ?Closure
     {
-        return $this->handler;
+        return $this->handlerFactory;
     }
 
-    public function setHandler(SessionHandlerInterface $handler): void
+    /**
+     * @param Closure(): SessionHandlerInterface $handlerFactory
+     */
+    public function setHandlerFactory(Closure $handlerFactory): void
     {
-        $this->handler = $handler;
+        $this->handlerFactory = $handlerFactory;
     }
 
     public function csrf(): bool

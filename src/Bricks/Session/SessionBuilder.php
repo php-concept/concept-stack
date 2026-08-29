@@ -2,6 +2,7 @@
 
 namespace Concept\Stack\Bricks\Session;
 
+use Closure;
 use SessionHandlerInterface;
 
 final class SessionBuilder
@@ -21,12 +22,14 @@ final class SessionBuilder
     }
 
     /**
-     * Explicit session handler. When omitted, NativeFileSessionHandler() with PHP defaults is used.
-     * Stack does not resolve storage paths — pass a ready handler from app glue if needed.
+     * Session handler factory. When omitted, NativeFileSessionHandler() with PHP defaults is used.
+     * Stack does not resolve storage paths — pass a factory from app glue (file, PDO, custom, …).
+     *
+     * @param Closure(): SessionHandlerInterface $handlerFactory
      */
-    public function setHandler(SessionHandlerInterface $handler): self
+    public function setHandlerFactory(Closure $handlerFactory): self
     {
-        $this->options->setHandler($handler);
+        $this->options->setHandlerFactory($handlerFactory);
 
         return $this;
     }

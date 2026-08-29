@@ -8,7 +8,6 @@ use Concept\Extensions\SessionSymfony\Contracts\SessionInterface;
 use Concept\Extensions\SessionSymfony\SessionServiceProvider;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
-use Symfony\Component\HttpFoundation\Session\Storage\Handler\NativeFileSessionHandler;
 
 final class SessionStackProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
@@ -31,7 +30,7 @@ final class SessionStackProvider extends AbstractServiceProvider implements Boot
 
         $container->addServiceProvider(new SessionServiceProvider(
             sessionOptions: $this->options->sessionOptions(),
-            handler: $this->options->handler() ?? new NativeFileSessionHandler(),
+            handlerFactory: $this->options->handlerFactory(),
         ));
 
         if (!$this->options->csrf()) {
