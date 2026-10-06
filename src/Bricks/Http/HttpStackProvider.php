@@ -12,12 +12,16 @@ use Concept\Extensions\CastingValinor\Routing\TypedRouteParameterArgumentResolve
 use Concept\Extensions\FormRequest\Contracts\FormRequestFactoryInterface;
 use Concept\Extensions\FormRequest\Routing\FormRequestArgumentResolver;
 use Concept\Extensions\Http\HttpServiceProvider;
+use Closure;
 use League\Container\DefinitionContainerInterface;
 use League\Container\ServiceProvider\AbstractServiceProvider;
 use League\Container\ServiceProvider\BootableServiceProviderInterface;
+use RuntimeException;
 
 final class HttpStackProvider extends AbstractServiceProvider implements BootableServiceProviderInterface
 {
+    private const string ERR_APPENDED_RESOLVER_INVALID = 'Appended argument resolver factory must return an instance of %s, got %s.';
+
     public function __construct(
         private readonly HttpOptions $options,
     ) {}
@@ -71,6 +75,22 @@ final class HttpStackProvider extends AbstractServiceProvider implements Bootabl
         }
 
         $resolvers[] = new RouteParameterArgumentResolver();
+
+        foreach ($this->options->appendedResolvers() as $resolverEntry) {
+            $resolver = $resolverEntry instanceof Closure
+                ? $resolverEntry($container)
+                : $resolverEntry;
+
+            if (!$resolver instanceof ArgumentResolverInterface) {
+                throw new RuntimeException(sprintf(
+                    self::ERR_APPENDED_RESOLVER_INVALID,
+                    ArgumentResolverInterface::class,
+                    is_object($resolver) ? $resolver::class : get_debug_type($resolver),
+                ));
+            }
+
+            $resolvers[] = $resolver;
+        }
 
         return $resolvers;
     }

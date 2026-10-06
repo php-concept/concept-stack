@@ -3,6 +3,7 @@
 namespace Concept\Stack\Bricks\Http;
 
 use Closure;
+use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Stack\Builder\StackBuilder;
 use Concept\Stack\Capability\Capability;
@@ -71,6 +72,21 @@ final class HttpBuilder
     public function setNotFoundMiddleware(MiddlewareInterface|Closure|null $middleware): self
     {
         $this->options->setNotFoundMiddleware($middleware);
+
+        return $this;
+    }
+
+    /**
+     * Appends custom argument resolvers after the built-in chain
+     * (FormRequest, ServerRequest, TypedRoute, RouteParameter).
+     *
+     * Pass resolver instances or factory Closures; class-strings are not resolved.
+     *
+     * @param list<ArgumentResolverInterface|Closure(ContainerInterface): mixed> $resolvers
+     */
+    public function appendResolvers(array $resolvers): self
+    {
+        $this->options->appendResolvers($resolvers);
 
         return $this;
     }

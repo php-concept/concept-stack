@@ -3,6 +3,7 @@
 namespace Concept\Stack\Bricks\Http;
 
 use Closure;
+use Concept\Core\Http\Contracts\ArgumentResolverInterface;
 use Concept\Core\Http\Contracts\RouteInterceptorInterface;
 use Concept\Stack\Capability\Capability;
 use Concept\Stack\Exceptions\InvalidCapabilityOptionsException;
@@ -23,6 +24,9 @@ final class HttpOptions
 
     /** @var MiddlewareInterface|Closure(ContainerInterface): mixed|null */
     private MiddlewareInterface|Closure|null $notFoundMiddleware = null;
+
+    /** @var list<ArgumentResolverInterface|Closure(ContainerInterface): mixed> */
+    private array $appendedResolvers = [];
 
     /**
      * @return list<string>
@@ -90,6 +94,22 @@ final class HttpOptions
     public function setNotFoundMiddleware(MiddlewareInterface|Closure|null $notFoundMiddleware): void
     {
         $this->notFoundMiddleware = $notFoundMiddleware;
+    }
+
+    /**
+     * @return list<ArgumentResolverInterface|Closure(ContainerInterface): mixed>
+     */
+    public function appendedResolvers(): array
+    {
+        return $this->appendedResolvers;
+    }
+
+    /**
+     * @param list<ArgumentResolverInterface|Closure(ContainerInterface): mixed> $resolvers
+     */
+    public function appendResolvers(array $resolvers): void
+    {
+        array_push($this->appendedResolvers, ...$resolvers);
     }
 
     public function assertValid(): void

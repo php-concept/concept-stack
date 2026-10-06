@@ -221,6 +221,7 @@ new HttpServiceProvider(); // без params
 | `$resolvers` | збирає stack (див. нижче) |
 | FormRequest resolver | `->withFormRequests()` (requires validation) |
 | Typed route resolver | `->withTypedRouteParameters()` (requires casting) |
+| Custom resolvers | `->appendResolvers([...])` — instances або `Closure(ContainerInterface): ArgumentResolverInterface` (не class-string); після built-in chain |
 
 **Порядок resolvers:**
 
@@ -228,6 +229,7 @@ new HttpServiceProvider(); // без params
 2. `ServerRequestArgumentResolver` — завжди
 3. `TypedRouteParameterArgumentResolver` — якщо `withTypedRouteParameters()`
 4. `RouteParameterArgumentResolver` — завжди
+5. Appended — якщо `appendResolvers()`
 
 ---
 
