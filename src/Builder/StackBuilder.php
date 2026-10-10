@@ -43,12 +43,16 @@ use Concept\Stack\Bricks\View\ViewOptions;
 use Concept\Stack\Bricks\View\ViewStackProvider;
 use Concept\Stack\Capability\Capability;
 use Concept\Stack\Capability\CapabilityRegistry;
+use Concept\Stack\Contract\BrickInterface;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
 final class StackBuilder
 {
     /** @var array<string, ServiceProviderInterface> */
     private array $capabilityProviders = [];
+
+    /** @var array<string, BrickInterface> */
+    private array $customBricks = [];
 
     /** @var list<ServiceProviderInterface> */
     private array $additionalProviders = [];
@@ -221,6 +225,18 @@ final class StackBuilder
     }
 
     /**
+     * App / third-party brick (options configured on the brick before this call).
+     */
+    public function addCustom(BrickInterface $brick): self
+    {
+        $this->capabilities->register($brick->name(), $brick->requires());
+        $this->customBricks[$brick->name()] = $brick;
+        $this->optionValidators[] = static fn() => $brick->assertValid();
+
+        return $this;
+    }
+
+    /**
      * Escape hatch for application-specific providers that are not stack capabilities.
      */
     public function addProvider(ServiceProviderInterface $provider): self
@@ -241,6 +257,11 @@ final class StackBuilder
 
         $providers = [];
         foreach ($this->capabilities->orderedNames() as $name) {
+            if (isset($this->customBricks[$name])) {
+                array_push($providers, ...$this->customBricks[$name]->providers());
+                continue;
+            }
+
             $providers[] = $this->capabilityProviders[$name];
         }
 
