@@ -2,3 +2,7 @@ parameters:
     level: 9
     paths:
         - src
+    ignoreErrors:
+        -
+            message: '#Trait Concept\\Stack\\Support\\BindsToStack is used zero times#'
+            path: src/Support/BindsToStack.php

@@ -28,7 +28,7 @@ final class CapabilityRegistry
     public function require(string $name, string $dependency): void
     {
         if (!$this->has($name)) {
-            throw InvalidCapabilityOptionsException::missingOption($name, 'enable via add*() first');
+            throw InvalidCapabilityOptionsException::missingOption($name, 'enable via StackBuilder::add() first');
         }
 
         if (!in_array($dependency, $this->capabilities[$name], true)) {

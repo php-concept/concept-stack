@@ -1,6 +1,6 @@
 {
     "name": "php-concept/stack",
-    "description": "Concept application stack recipes",
+    "description": "Concept stack assembler (thin: ConceptStack + brick contracts)",
     "type": "library",
     "license": "MIT",
     "autoload": {
@@ -11,142 +11,10 @@
     "require": {
         "php": "^8.4",
         "league/container": "^5.1",
-        "monolog/monolog": "^3",
         "php-concept/core-2": "^1.0",
-        "php-concept/extension-casting-valinor": "^1.0",
-        "php-concept/extension-console-symfony": "^1.0",
-        "php-concept/extension-data-masker": "^1.0",
-        "php-concept/extension-form-request": "^1.0",
-        "php-concept/extension-http": "^1.0",
-        "php-concept/extension-csrf": "^1.0",
-        "php-concept/extension-database-eloquent": "^1.0",
-        "php-concept/extension-event": "^1.0",
-        "php-concept/extension-logger-monolog": "^1.0",
-        "php-concept/extension-session-symfony": "^1.0",
-        "php-concept/extension-telemetry": "^1.0",
-        "php-concept/extension-validation-rakit": "^1.0",
-        "php-concept/extension-view": "^1.0",
-        "php-concept/extension-view-plates": "^1.0",
-        "php-concept/extension-view-twig": "^1.0",
-        "symfony/console": "^7.3",
-        "symfony/http-foundation": "^7.2",
-        "php-concept/extension-error-handler-whoops": "^1.0",
-        "psr/http-server-middleware": "^1.0",
-        "php-concept/extension-components": "^1.0"
+        "psr/container": "^2.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1"
-    },
-    "repositories": {
-        "extension-components": {
-            "type": "path",
-            "url": "../concept-extensions/extension-components",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-components": "1.0.0"
-                }
-            }
-        },
-        "extension-error-handler-whoops": {
-            "type": "path",
-            "url": "../concept-extensions/extension-error-handler-whoops",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-error-handler-whoops": "1.0.0"
-                }
-            }
-        },
-        "extension-telemetry": {
-            "type": "path",
-            "url": "../concept-extensions/extension-telemetry",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-telemetry": "1.0.0"
-                }
-            }
-        },
-        "extension-event": {
-            "type": "path",
-            "url": "../concept-extensions/extension-event",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-event": "1.0.0"
-                }
-            }
-        },
-        "extension-logger-monolog": {
-            "type": "path",
-            "url": "../concept-extensions/extension-logger-monolog",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-logger-monolog": "1.0.0"
-                }
-            }
-        },
-        "extension-csrf": {
-            "type": "path",
-            "url": "../concept-extensions/extension-csrf",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-csrf": "1.0.0"
-                }
-            }
-        },
-        "extension-database-eloquent": {
-            "type": "path",
-            "url": "../concept-extensions/extension-database-eloquent",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-database-eloquent": "1.0.0"
-                }
-            }
-        },
-        "extension-session-symfony": {
-            "type": "path",
-            "url": "../concept-extensions/extension-session-symfony",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-session-symfony": "1.0.0"
-                }
-            }
-        },
-        "extension-view": {
-            "type": "path",
-            "url": "../concept-extensions/extension-view",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-view": "1.0.0"
-                }
-            }
-        },
-        "extension-view-plates": {
-            "type": "path",
-            "url": "../concept-extensions/extension-view-plates",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-view-plates": "1.0.0"
-                }
-            }
-        },
-        "extension-view-twig": {
-            "type": "path",
-            "url": "../concept-extensions/extension-view-twig",
-            "options": {
-                "symlink": true,
-                "versions": {
-                    "php-concept/extension-view-twig": "1.0.0"
-                }
-            }
-        }
     }
 }

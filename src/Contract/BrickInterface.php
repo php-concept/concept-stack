@@ -5,7 +5,12 @@ namespace Concept\Stack\Contract;
 use League\Container\ServiceProvider\ServiceProviderInterface;
 
 /**
- * App / third-party stack brick. Register via StackBuilder::addCustom().
+ * Stack brick — one capability contributed to ConceptStack.
+ *
+ * First-party packages add a thin *Brick entry that wraps Builder / Options / StackProvider.
+ * Register via StackBuilder::add().
+ *
+ * Options validation stays inside the package (typically *StackProvider), not on this contract.
  */
 interface BrickInterface
 {
@@ -15,21 +20,18 @@ interface BrickInterface
     public function name(): string;
 
     /**
-     * Other capability names that must be enabled first.
+     * Other capability names that must be present (base deps).
+     * Opt-in deps (withMasking, withFormRequests, …) are added via StackBuilder::require()
+     * after bind — see BindableBrickInterface.
      *
      * @return list<string>
      */
     public function requires(): array;
 
     /**
-     * Service providers contributed by this brick (in registration order).
+     * Service providers contributed by this brick (registration order).
      *
      * @return list<ServiceProviderInterface>
      */
     public function providers(): array;
-
-    /**
-     * Fail fast before providers() are collected.
-     */
-    public function assertValid(): void;
 }
